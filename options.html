@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Settings</title>
+<style>
+body {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 1em;
+}
+.container {
+    margin: 1em 3em 1em 1em;
+    padding: 1em;
+    border: 1px solid #759;
+}
+
+/* Help */
+input + div {
+    visibility: hidden;
+    max-width: 500px;
+    border-left: 1px solid #75F;
+    padding-left: 5px;
+}
+input:focus + div, input:hover + div {
+    visibility: visible;
+}
+
+/* Text input */
+#uid, #link {
+    border: solid 1px #CCC;
+    color: #333;
+    display: block;
+    padding: 5px;
+    box-sizing: border-box;
+    width: 300px;
+}
+#link:focus {
+    width: 100%;
+}
+.changed {
+    background-color: rgba(255, 255, 50, 0.5);
+}
+#uid:not(.changed), #link:not(.changed) {
+    background-color: rgba(200, 250, 100, 0.5);
+}
+
+/* Buttons */
+#save {
+    display: block;
+}
+#save, #start-socket, #stop-socket {
+    padding: 5px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <input type="text" id="uid" placeholder="Stack Exchange user id">
+    <div>Stack Exchange User ID. This is the number in the URL when you visit your Stack Exchange profile at <a href="http://stackexchange.com/" rel="noreferrer">StackExchange.com</a>.</div>
+    
+    <input type="url" id="link" placeholder="Link at desktop notification (defaults to Stack Exchange inbox)">
+    <div>The desktop notification will link to this URL upon click. It's recommended to link to the inbox at your favourite Stack Exchange site.<br>
+         Defaults to <span id="default-link"></span>.
+    </div>
+
+    <input type="button" id="save" value="Save">
+    <div>
+        Save changes. The socket connection will automatically be (re)started.
+    </div>
+</div>
+<div class="container">
+    <label><input type="checkbox" id="incognito"> Open windows in incognito mode</label>
+</div>
+<div class="container">
+    Socket status: <span id="status"></span>.<br>
+    <input type="button" value="Start" id="socket-start">
+    <input type="button" value="Stop" id="socket-stop">
+</div>
+<script src="options.js"></script>
+</body>
+</html>
