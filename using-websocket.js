@@ -67,7 +67,7 @@ function startSocket() {
     };
     ws.onmessage = function(ev) {
         var message = JSON.parse(ev.data);
-        if (message.action == 'hb') o.send(message.data);
+        if (message.action == 'hb') ws.send(message.data);
         if (message.action == method) setUnreadCount(message.data);
 
         eventEmitter.emit('socket', 'message');
