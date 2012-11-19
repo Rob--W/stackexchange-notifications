@@ -5,9 +5,6 @@ var METHOD; // UID + '-inbox';
 // Maintain WebSocket connection
 var SOCKET_URL = 'ws://sockets-se.or.stackexchange.com';
 
-// Is options.html open?
-var optionsOpened = false;
-
 // Very simple event emitter
 var eventEmitter = {
     _callbacks: {},
@@ -30,6 +27,60 @@ var eventEmitter = {
     }
 };
 
+function openTab(url) {
+    var incognitoPreference = !!localStorage.getItem('incognito');
+    chrome.windows.getAll(function(windows) {
+        // No windows. Just create a new one
+        if (windows.length == 0) return createWindow();
+        // Use currently focused window if incognito flag matches
+        for (var i=0; i<windows.length; i++)
+            if (windows[i].focused == true)
+                if (windows[i].incognito == incognitoPreference)
+                    return createTab(windows[i].id);
+        // Use any window which matches the incognito flag
+        for (var i=0; i<windows.length; i++)
+            if (windows[i].incognito == incognitoPreference)
+                return createTab(windows[i].id);
+        // No suitable window found, create new one
+        createWindow();
+    });
+    function createWindow() {
+        chrome.windows.create({
+            focused: true,
+            incognito: incognitoPreference,
+            url: url
+        });
+    }
+    function createTab(windowId) {
+        chrome.tabs.create({
+            windowId: windowId,
+            url: url,
+            active: true
+        }, function(tab) {
+            chrome.windows.update(tab.windowId, {
+                focused: true
+            });
+        });
+    }
+}
+// Open options page, make sure that only one is opened
+function ensureOneOptionsPage() {
+    var options_url = chrome.extension.getURL('options.html');
+    chrome.tabs.query({
+        url: options_url
+    }, function(tabs) {
+        if (tabs.length == 0) {
+            openTab(options_url);
+        } else {
+            // If there's more than one, close all but the first
+            for (var i=1; i<tabs.length; i++)
+                chrome.tabs.remove(tabs[i].id);
+            // And focus the options page
+            chrome.tabs.update(tabs[0].id, {active: true});
+        }
+    });
+}
+
 var _attempts = 0;
 function getReconnectDelay() {
     // Exponential growth till 2^9, followed by linear growth
@@ -48,13 +99,14 @@ function startSocket() {
     var uid = getUserID();
     if (!uid) {
         console.log('Did not start socket because no UID is found');
-        if (!optionsOpened && confirm('No user ID found. Want to configure Desktop Notifications for the Stack Exchange?')) {
-            chrome.tabs.create({
-                url: chrome.extension.getURL('options.html'),
-                active: true,
-                incognito: !!localStorage.getItem('incognito')
-            });
-        }
+        chrome.tabs.query({
+            url: chrome.extension.getURL('options.html'),
+            active: true
+        }, function(tabs) {
+            if (!tabs.length && confirm('No user ID found. Want to configure Desktop Notifications for the Stack Exchange?')) {
+                ensureOneOptionsPage();
+            }
+        });
         return;
     }
 
@@ -155,7 +207,7 @@ function showNotification() {
 
 // When the UID changes, restart socket (socket will be closed if UID is empty)
 eventEmitter.on('change:uid', function(id) {
-    init();
+    if (localStorage.getItem('autostart') != '0') startSocket();
 });
 // Start socket with default settings if possible
-startSocket();
+if (localStorage.getItem('autostart') != '0') startSocket();
