@@ -145,10 +145,10 @@ function startSocket() {
 function getSocketStatus() {
     return ws ? ws.readyState : 0;
 }
-function stopSocket() {
+function stopSocket(explicitStop) {
+    if (explicitStop) socket_keep_alive = false;
     if (ws) try {
         console.log('Closing (existing) WebSocket');
-        socket_keep_alive = false;
         ws.close();
     } catch(e) {}
 }
@@ -159,6 +159,7 @@ function getUserID() {
     return localStorage.getItem('stackexchange-user-id');
 }
 function setUserID(id) {
+    id = /\d*/.exec(id)[0];
     var previousID = getUserID();
     localStorage.setItem('stackexchange-user-id', id);
     if (id != previousID) eventEmitter.emit('change:uid', id);

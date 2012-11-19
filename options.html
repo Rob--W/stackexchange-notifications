@@ -23,12 +23,13 @@ input {
 }
 
 /* Help */
-input + div {
+input ~ div {
     visibility: hidden;
     max-width: 550px;
     border-left: 1px solid #75F;
     padding-left: 5px;
 }
+#uid:focus + #display-name + div, #uid:hover + #display-name + div, #uid + #display-name + div:hover,
 input:focus + div, input:hover + div, input + div:hover {
     visibility: visible;
 }
@@ -52,6 +53,14 @@ input:focus + div, input:hover + div, input + div:hover {
     background-color: rgba(200, 250, 100, 0.5);
 }
 
+/* UID-to-display name hint */
+#uid {
+    display: inline-block;
+}
+#display-name {
+    margin-left: 10px;
+}
+
 /* Buttons */
 #save {
     display: block;
@@ -65,6 +74,7 @@ input:focus + div, input:hover + div, input + div:hover {
 <h1>Desktop notifications for Stack Exchange - Control panel</h1>
 <div class="container">
     <input type="text" id="uid" placeholder="Stack Exchange user id" tabindex="1">
+    <span id="display-name"></span>
     <div>Stack Exchange User ID. This is the number in the URL when you visit your Stack Exchange profile at <a href="http://stackexchange.com/" rel="noreferrer" target="_blank">StackExchange.com</a>.</div>
     
     <input type="url" id="link" placeholder="Link at desktop notification (defaults to Stack Exchange inbox)" tabindex="2">
