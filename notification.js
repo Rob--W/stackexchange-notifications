@@ -5,4 +5,5 @@ link.title = link.href = bg.getLink() || bg.generateDefaultLink();
 link.onclick = function(e) {
     e.preventDefault();
     bg.openTab(this.href);
+    window.close();
 };
