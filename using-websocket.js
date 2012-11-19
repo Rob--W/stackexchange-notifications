@@ -1,9 +1,11 @@
+/*global */
 // Highly specific piece of code for subscribing to inbox notifications
 var METHOD; // UID + '-inbox';
 
 // Maintain WebSocket connection
 var SOCKET_URL = 'ws://sockets-se.or.stackexchange.com';
 
+// Is options.html open?
 var optionsOpened = false;
 
 // Very simple event emitter
@@ -38,6 +40,7 @@ function resetAttempts() {
 }
 
 var ws;
+var socket_keep_alive = false;
 function startSocket() {
     stopSocket();
     if (ws) return;
@@ -54,6 +57,9 @@ function startSocket() {
         }
         return;
     }
+
+    // Socket, don't die!
+    socket_keep_alive = true;
 
     var method = uid + '-inbox';
     ws = new WebSocket(SOCKET_URL);
@@ -75,7 +81,7 @@ function startSocket() {
     ws.onclose = function() {
         console.log('Closed WebSocket');
         ws = null;
-        setTimeout(initializeSocketConnection, getReconnectDelay());
+        if (socket_keep_alive) setTimeout(startSocket, getReconnectDelay());
 
         eventEmitter.emit('socket', 'close');
     };
@@ -90,6 +96,7 @@ function getSocketStatus() {
 function stopSocket() {
     if (ws) try {
         console.log('Closing (existing) WebSocket');
+        socket_keep_alive = false;
         ws.close();
     } catch(e) {}
 }
@@ -131,21 +138,24 @@ function getUnreadCount() {
 }
 
 // Notification
-var _notification;
+var _notification, _currentNotificationID;
 function showNotification() {
+    var notID = new Date().getTime();
     if (_notification) _notification.close();
     if (getUnreadCount() > 0) {
         _notification = webkitNotifications.createHTMLNotification(chrome.extension.getURL('notification.html'));
         _notification.onclose = function() {
-            _notification = null;
+            if (_currentNotificationID == notID) {
+                _notification = null;
+            }
         };
         _notification.show();
     }
 }
 
-
-// Start socket with default settings if possible
-eventEmitter.on('change:id', function(id) {
+// When the UID changes, restart socket (socket will be closed if UID is empty)
+eventEmitter.on('change:uid', function(id) {
     init();
 });
+// Start socket with default settings if possible
 startSocket();

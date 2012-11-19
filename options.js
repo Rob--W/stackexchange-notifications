@@ -39,7 +39,7 @@ socketStart.onclick = function() {
     bg.startSocket();
 };
 socketStop.onclick = function() {
-    bg.stopSocket();
+    bg.stopSocket(true);
 };
 
 function _uidChange(value) {
@@ -54,15 +54,15 @@ function socketEventListener(status) {
         statusSpan.textContent = 'listening';
         socketStart.disabled = true;
         socketStop.disabled = false;
-    } else if (status == 'stop') {
+    } else if (status == 'close') {
         statusSpan.textContent = 'stopped';
         // Only show if uid is defined
         socketStart.disabled = !bg.getUserID();
         socketStop.disabled = true;
     }
-};
+}
 // Handle current status
-socketEventListener(bg.getSocketStatus() == 1 ? 'open' : 'stop');
+socketEventListener(bg.getSocketStatus() == 1 ? 'open' : 'close');
 
 // Bind events
 bg.eventEmitter.on('socket', socketEventListener);
