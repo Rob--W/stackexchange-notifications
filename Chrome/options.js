@@ -14,6 +14,7 @@ var run_in_bg = document.getElementById('run_in_bg');
 
 uid.defaultValue = uid.value = bg.getUserID() || '';
 link.defaultValue = link.value = bg.getLink();
+link.placeholder = bg.generateDefaultLink('<uid>');
 document.getElementById('default-link').textContent = bg.generateDefaultLink('<uid>');
 
 // Open tabs in incognito window? 
@@ -51,12 +52,17 @@ chrome.permissions.onAdded.addListener(function(permissions) {
 });
 
 
+function updateSaveButtonState() {
+    save.disabled = document.getElementsByClassName('changed').length == 0;
+}
+updateSaveButtonState();
 // Save uid and link settings
 var saveFields = save.onclick = function() {
     bg.setUserID(uid.value);
     bg.setLink(link.value);
     uid.classList.remove('changed');
     link.classList.remove('changed');
+    updateSaveButtonState();
 };
 link.oninput = function(ev) {
     if (this.value != this.defaultValue) {
@@ -64,6 +70,7 @@ link.oninput = function(ev) {
     } else {
         this.classList.remove('changed');
     }
+    updateSaveButtonState();
 };
 uid.onkeydown = link.onkeydown = function(ev) {
     if (ev.which == 13) saveFields();
@@ -75,31 +82,43 @@ var _currentlyCheckingUID = -1;
 var _l1_cache = {}
 var _l2_cache = {};
 var _timedoutRequest;
-uid.oninput = function() {
+function getUIDFromInput(input_string) {
+    var match = /^\s*(\d+)\s*$/.exec(input_string);
+    return match ? match[1] : null;
+}
+var validateUIDInput = uid.oninput = function() {
     clearTimeout(_timedoutRequest);
     // Change the appearance only if the uid really changed
-    var val = +/\d*/.exec(this.value)[0];
-    if (val != /\d*/.exec(this.defaultValue)[0]) {
-        this.classList.add('changed');
+    var val = getUIDFromInput(uid.value);
+    if (val != getUIDFromInput(uid.defaultValue)) {
+        uid.classList.add('changed');
     } else {
-        this.classList.remove('changed');
+        uid.classList.remove('changed');
     }
-    document.getElementById('display-name').textContent = '';
-    if (val > 0) {
-        if (_l1_cache[val]) {
-            // Already cached, try to get the value
-            siteuidToName(_l1_cache[val]);
-        } else {
-            _timedoutRequest = setTimeout(uidToName, 300, val);
+    if (getUIDFromInput(uid.value) === null) {
+        uid.classList.add('invalid');
+    } else {
+        uid.classList.remove('invalid');
+        document.getElementById('display-name').textContent = '';
+        if (val > 0) {
+            if (_l1_cache[val]) {
+                // Already cached, try to get the value
+                siteuidToName(_l1_cache[val], val);
+            } else {
+                _timedoutRequest = setTimeout(uidToName, 300, val);
+            }
         }
     }
+    updateSaveButtonState();
 };
+validateUIDInput();
 // Given a UID, a name is fetched using the Stack Exchange API
 function uidToName(val) {
     val = +val;
     if (!(val > 0)) return;
     if (_l1_cache[val]) {
-        return siteuidToName(_l1_cache[val]);
+        siteuidToName(_l1_cache[val], val);
+        return;
     }
     if (_currentlyCheckingUID == val) return;
     
@@ -116,7 +135,7 @@ function uidToName(val) {
         var result = JSON.parse(this.responseText);
         if (result = result.items && result.items[0]) {
             _l1_cache[val] = result;
-            siteuidToName(result);
+            siteuidToName(result, val);
         } else {
             _l1_cache[val] = {};
             document.getElementById('display-name').textContent = 'N/A';
@@ -140,7 +159,12 @@ function uidToName(val) {
     _api_xhr.send();
 }
 // Intended to only be called by uidToName.
-function siteuidToName(result) {
+function siteuidToName(result, uid_value) {
+    var _tmp = getUIDFromInput(uid.value);
+    if (_tmp === null || +_tmp !== uid_value) {
+        // ID changed during request. Don't look further
+        return;
+    }
     var site = result.site_url;
     if (site) site = site.split('//').pop();
     var siteuid = result.user_id;
@@ -187,15 +211,15 @@ socketStop.onclick = function() {
 
 // Event emitter event listeners
 function _uidChange(value) {
+    uid.defaultValue = uid.value = value;
     if (value != uid.value) {
-        uid.defaultValue = uid.value = value;
         uidToName(value);
     }
     // If socket has been started, then disable button
     socketStart.disabled = bg.getSocketStatus() == 1;
 }
 function _linkChange(value) {
-    if (value != link.value) link.defaultValue = link.value = value;
+    link.defaultValue = link.value = value;
 }
 
 function socketEventListener(status) {

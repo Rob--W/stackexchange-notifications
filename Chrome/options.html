@@ -1,84 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="utf-8">
 <title>SE Notification settings</title>
-<style>
-body {
-    box-sizing: border-box;
-    padding: 0 1em;
-    font-family: arial, sans-serif;
-}
-h1 {
-    margin: 0;
-    font-size: 1.25em;
-    line-height: 1em;
-}
-.container {
-    margin: 1em 2em 1em 1em;
-    padding: 1em;
-    border: 1px solid #759;
-}
-input {
-    margin: 0;
-}
-
-/* Help */
-input ~ div {
-    visibility: hidden;
-    max-width: 550px;
-    border-left: 1px solid #75F;
-    padding-left: 5px;
-}
-#uid:focus + #display-name + div, #uid:hover + #display-name + div, #uid + #display-name + div:hover,
-input:focus + div, input:hover + div, input + div:hover {
-    visibility: visible;
-}
-
-/* Text input */
-#uid, #link {
-    border: solid 1px #CCC;
-    color: #333;
-    display: block;
-    padding: 5px;
-    box-sizing: border-box;
-    width: 300px;
-}
-#link:focus {
-    width: 100%;
-}
-.changed {
-    background-color: rgba(255, 255, 50, 0.5);
-}
-#uid:not(.changed), #link:not(.changed) {
-    background-color: rgba(200, 250, 100, 0.5);
-}
-
-/* UID-to-display name hint */
-#uid {
-    display: inline-block;
-}
-#display-name {
-    margin-left: 10px;
-}
-
-/* Buttons */
-#save {
-    display: block;
-}
-#save, #start-socket, #stop-socket {
-    padding: 5px;
-}
-</style>
+<link rel="stylesheet" href="options.css" type="text/css">
 </head>
 <body>
-<h1>Desktop notifications for Stack Exchange - Control panel</h1>
+<h1>Desktop notifications for Stack Exchange</h1>
 <div class="container">
     <input type="text" id="uid" placeholder="Stack Exchange user id" tabindex="1">
     <span id="display-name"></span>
-    <div>Stack Exchange User ID. This is the number in the URL when you visit your Stack Exchange profile at <a href="http://stackexchange.com/" rel="noreferrer" target="_blank">StackExchange.com</a>.</div>
+    <div>This numeric ID can be found by visiting your Stack Exchange profile at <a href="http://stackexchange.com/" rel="noreferrer" target="_blank">StackExchange.com</a>.</div>
     
-    <input type="url" id="link" placeholder="Link at desktop notification (defaults to Stack Exchange inbox)" tabindex="2">
-    <div>The desktop notification will link to this URL upon click. It's recommended to link to the inbox at your favourite Stack Exchange site.<br>
+    <input type="url" id="link" tabindex="2">
+    <div>The desktop notification will open this URL on click. It's recommended to link to the inbox at your favourite Stack Exchange site.<br>
          Defaults to <span id="default-link"></span>.
     </div>
 
@@ -97,9 +32,12 @@ input:focus + div, input:hover + div, input + div:hover {
     <input type="button" value="Start" id="socket-start" tabindex="7">
     <input type="button" value="Stop" id="socket-stop" tabindex="8">
 </div>
-<script src="options.js"></script>
 <footer>
-Created by Rob W &lt;<a href="mailto:gwnRob@gmail.com" target="_blank">gwnRob@gmail.com</a>&gt; (support and <a href="https://github.com/Rob--W/stackexchange-notifications" target="_blank">source code</a> on Github).
+Created by Rob W &lt;<a href="mailto:gwnRob@gmail.com" target="_blank">gwnRob@gmail.com</a>&gt;.<br>
+Project home: <a href="https://github.com/Rob--W/stackexchange-notifications" target="_blank">GitHub</a> &bull; <a href="http://stackapps.com/q/3780/9699?real-time-desktop-notifications-for-stack-exchange-inbox" target="_blank">Stack Apps</a> &bull;
+<a href="https://chrome.google.com/webstore/detail/ijglncoabcgieiokjmgdogpefdblmnle" target="_blank">Chrome Web Store</a>
 </footer>
+
+<script src="options.js"></script>
 </body>
 </html>
