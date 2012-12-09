@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SE Notification settings</title>
+<script>
+// Error reporting through the content script to the console
+window.onerror = function(message, filename, lineno) {
+    postMessage('#' + message + ' in ' + filename.split('/').pop() + ':' + lineno, '*');
+};
+</script>
+<script src="using-websocket.js"></script>
+
+<link rel="stylesheet" href="options.css" type="text/css">
+</head>
+<body>
+<h1>Desktop notifications for Stack Exchange</h1>
+<div class="container">
+    <input type="text" id="uid" placeholder="Stack Exchange user id" tabindex="1" title="This numeric ID can be found by visiting your Stack Exchange profile.">
+    <span id="display-name"></span>
+
+    <input type="url" id="link" tabindex="2" title="The desktop notification will open this URL on click. It's recommended to link to the inbox at your favourite Stack Exchange site.">
+
+    <input type="button" id="save" value="Save" tabindex="3" title="Save changes. The socket connection will automatically be (re)started.">
+</div>
+<div class="container">
+    <label title="Start listening to inbox notifications when Firefox starts"><input type="checkbox" id="autostart" tabindex="4"> Automatically start socket connection.</label><br>
+</div>
+<div class="container">
+    Socket status: <span id="status"></span>.<br>
+    <input type="button" value="Start" id="socket-start" tabindex="7">
+    <input type="button" value="Stop" id="socket-stop" tabindex="8">
+</div>
+<footer>
+Created by Rob W &lt;<a href="mailto:gwnRob@gmail.com" target="_blank">gwnRob@gmail.com</a>&gt;.<br>
+Project home: <a href="https://github.com/Rob--W/stackexchange-notifications" target="_blank">GitHub</a> &bull; <a href="http://stackapps.com/q/3780/9699?real-time-desktop-notifications-for-stack-exchange-inbox" target="_blank">Stack Apps</a> &bull;
+<a href="https://chrome.google.com/webstore/detail/ijglncoabcgieiokjmgdogpefdblmnle" target="_blank">Chrome Web Store</a>
+</footer>
+
+<script src="options.js"></script>
+</body>
+</html>
