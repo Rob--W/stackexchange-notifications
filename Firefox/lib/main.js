@@ -34,7 +34,7 @@ optionsPanel.port.on('options_message', function(message) {
         break;
         case 'showNotification':
             var matchesURL = function(url) {
-                return url == message.data.url;
+                return message.data.link.indexOf(url) == 0;
             };
             notifications.notify({
                 title: 'StackExchange\'s inbox',

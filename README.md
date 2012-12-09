@@ -7,4 +7,4 @@ https://chrome.google.com/webstore/detail/desktop-notifications-for/ijglncoabcgi
 ---
 
 The extension has been ported to a Firefox add-on since version 1.5!  
-A link to addons.mozilla.org will be placed here once it passed review.
+https://addons.mozilla.org/en-US/firefox/addon/real-time-desktop-notificat

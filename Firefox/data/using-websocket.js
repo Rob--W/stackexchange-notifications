@@ -146,13 +146,16 @@ function getUnreadCount() {
 
 // Notification
 function showNotification() {
-    postMessage(JSON.stringify({
-        method: 'showNotification',
-        data: {
-            unreadCount: getUnreadCount(),
-            link: getLink() || generateDefaultLink()
-        }
-    }), '*');
+    var unreadCount = getUnreadCount();
+    if (unreadCount > 0) {
+        postMessage(JSON.stringify({
+            method: 'showNotification',
+            data: {
+                unreadCount: unreadCount,
+                link: getLink() || generateDefaultLink()
+            }
+        }), '*');
+    }
 }
 
 // When the UID changes, restart socket (socket will be closed if UID is empty)
