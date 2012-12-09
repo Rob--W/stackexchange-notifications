@@ -1,0 +1,71 @@
+
+body {
+    box-sizing: border-box;
+    padding: 0 1em;
+    font-family: arial, sans-serif;
+}
+h1 {
+    margin: 0;
+    font-size: 1.25em;
+    line-height: 1em;
+}
+.container {
+    margin: 1em 2em 1em 1em;
+    padding: 1em;
+    border: 1px solid #759;
+}
+input {
+    margin: 0;
+}
+
+/* Help */
+input ~ div {
+    visibility: hidden;
+    max-width: 550px;
+    border-left: 1px solid #75F;
+    padding-left: 5px;
+}
+#uid:focus + #display-name + div, #uid:hover + #display-name + div, #uid + #display-name + div:hover,
+input:focus + div, input:hover + div, input + div:hover {
+    visibility: visible;
+}
+
+/* Text input */
+#uid, #link {
+    border: solid 1px #CCC;
+    color: #333;
+    display: block;
+    padding: 5px;
+    box-sizing: border-box;
+    width: 300px;
+}
+#link:focus {
+    box-sizing: border-box;
+    width: 100%;
+}
+.changed {
+    background-color: rgba(255, 255, 50, 0.5);
+}
+.invalid {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+#uid:not(.changed):not(.invalid),
+#link:not(.changed):not(.invalid) {
+    background-color: rgba(200, 250, 100, 0.5);
+}
+
+/* UID-to-display name hint */
+#uid {
+    display: inline-block;
+}
+#display-name {
+    margin-left: 10px;
+}
+
+/* Buttons */
+#save {
+    display: block;
+}
+#save, #start-socket, #stop-socket {
+    padding: 5px;
+}
