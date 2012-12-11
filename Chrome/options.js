@@ -133,9 +133,9 @@ function uidToName(val) {
     _api_xhr.onload = function() {
         if (this === _api_xhr) _api_xhr = null;
         var result = JSON.parse(this.responseText);
-        if (result = result.items && result.items[0]) {
-            _l1_cache[val] = result;
-            siteuidToName(result, val);
+        if (result && result.items && result.items[0]) {
+            _l1_cache[val] = result.items[0];
+            siteuidToName(_l1_cache[val], val);
         } else {
             _l1_cache[val] = {};
             document.getElementById('display-name').textContent = 'N/A';
@@ -159,7 +159,7 @@ function uidToName(val) {
     _api_xhr.send();
 }
 // Intended to only be called by uidToName.
-function siteuidToName(result, uid_value) {
+function siteuidToName(result, /*number*/ uid_value) {
     var _tmp = getUIDFromInput(uid.value);
     if (_tmp === null || +_tmp !== uid_value) {
         // ID changed during request. Don't look further
@@ -169,10 +169,12 @@ function siteuidToName(result, uid_value) {
     if (site) site = site.split('//').pop();
     var siteuid = result.user_id;
     if (!site) {
-        return document.getElementById('display-name').textContent = 'N/A';
+        document.getElementById('display-name').textContent = 'N/A';
+        return;
     }
     if (_l2_cache[site + siteuid]) {
-        return document.getElementById('display-name').textContent = _l2_cache[site + siteuid];
+        document.getElementById('display-name').textContent = _l2_cache[site + siteuid];
+        return;
     }
     
     // No concurrent requests

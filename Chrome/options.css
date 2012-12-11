@@ -1,6 +1,8 @@
-
-body {
+/* © Rob W <gwnRob@gmail.com> */
+body, #uid, #link {
     box-sizing: border-box;
+}
+body {
     padding: 0 1em;
     font-family: arial, sans-serif;
 }
@@ -36,11 +38,9 @@ input:focus + div, input:hover + div, input + div:hover {
     color: #333;
     display: block;
     padding: 5px;
-    box-sizing: border-box;
     width: 300px;
 }
 #link:focus {
-    box-sizing: border-box;
     width: 100%;
 }
 .changed {
