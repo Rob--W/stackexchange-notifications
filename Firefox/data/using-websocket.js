@@ -40,8 +40,8 @@ function ensureOneOptionsPage() {
 
 var _attempts = 0;
 function getReconnectDelay() {
-    // Exponential growth till 2^9, followed by linear growth
-    return 1e3 * ( ++_attempts < 10 ? Math.pow(2, _attempts) : 100 * _attempts);
+    // Exponential growth till 2^9, followed by fixed interval of 10 minutes.
+    return 1e3 * ( ++_attempts < 10 ? Math.pow(2, _attempts) : 600);
 }
 function resetAttempts() {
     _attempts = 0;
@@ -65,7 +65,9 @@ function startSocket() {
 
     // Socket, don't die!
     socket_keep_alive = true;
-
+    var lastHeartbeat; // Used ot check whether or not the connection died
+    var socketWatcher; // Holds reference to setInterval
+    
     var method = uid + '-inbox';
     var WebSocketConstructor = typeof WebSocket == 'undefined' ? MozWebSocket : WebSocket;
     ws = new WebSocketConstructor(SOCKET_URL);
@@ -74,12 +76,29 @@ function startSocket() {
         resetAttempts();
         // Subscribe to inbox
         this.send(method);
+        
+        // Watch connectivity
+        lastHeartbeat = Date.now();
+        socketWatcher = setInterval(function() {
+            var diff = Math.round((Date.now() - lastHeartbeat) / 60 / 000);
+            if (diff > 3*5) {
+                console_log('Last heartbeat was ' + diff + ' seconds ago. Resetting socket...');
+                // Reset socket when the socket died (heartbeat should occur every 5 minutes)
+                stopSocket();
+                // stopSocket -> onclose -> clearInterval(socketWatcher)
+                // After stopping, the socket will automatically be recreated because
+                // `socket_keep_alive` is still true
+            }
+        }, 60*1000);
 
         eventEmitter.emit('socket', 'open');
     };
     ws.onmessage = function(ev) {
         var message = JSON.parse(ev.data);
-        if (message.action == 'hb') ws.send(message.data);
+        if (message.action == 'hb') {
+            ws.send(message.data);
+            lastHeartbeat = Date.now();
+        }
         if (message.action == method) setUnreadCount(message.data);
 
         eventEmitter.emit('socket', 'message');
@@ -87,6 +106,7 @@ function startSocket() {
     ws.onclose = function() {
         console_log('Closed WebSocket');
         ws = null;
+        clearInterval(socketWatcher);
         if (socket_keep_alive) setTimeout(startSocket, getReconnectDelay());
 
         eventEmitter.emit('socket', 'close');

@@ -1,7 +1,9 @@
 /* © Rob W <gwnRob@gmail.com> */
-body {
+body, #uid, #link {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+}
+body {
     margin: 0;
     padding: 1em 1em 0 1em;
     font-family: arial, sans-serif;
@@ -30,12 +32,9 @@ input {
     color: #333;
     display: block;
     padding: 5px;
-    box-sizing: border-box;
     width: 300px;
 }
 #link {
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
     width: 100%;
 }
 .changed {
