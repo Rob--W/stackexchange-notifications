@@ -1,7 +1,7 @@
 {
     "name": "Desktop Notifications for Stack Exchange",
     "description": "Real-time desktop notifications for the Stack Exchange.",
-    "version": "1.6",
+    "version": "1.6.1",
     "manifest_version": 2,
     "background": {
         "scripts": [
@@ -12,7 +12,7 @@
     },
     "content_scripts": [{
         "matches": ["https://stackexchange.com/oauth/login_success?robw&*"],
-        "run_at": "document_start",
+        "run_at": "document_end",
         "js": ["login_success.js"]
     }],
     "options_page": "options.html",

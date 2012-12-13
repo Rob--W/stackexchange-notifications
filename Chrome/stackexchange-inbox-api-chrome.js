@@ -16,6 +16,9 @@ chrome.extension.onMessage.addListener(function(message, sender) {
         if (message.auth_token) {
             StackExchangeInbox.auth.setToken(message.auth_token);
         }
+        if (message.account_id) {
+            StackExchangeInbox.emit('found:account_id', message.account_id);
+        }
         chrome.tabs.remove(sender.tab.id);
     }
 });

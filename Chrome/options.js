@@ -216,6 +216,12 @@ function _tokenChange(token) {
 }
 _tokenChange(bg.StackExchangeInbox.auth.getToken());
 
+function _foundAccountID(account_id) {
+    // Happens after successful authentication
+    uid.value = account_id;
+    validateUIDInput();
+}
+
 function socketEventListener(status) {
     if (status == 'open') {
         statusSpan.textContent = 'listening';
@@ -237,12 +243,14 @@ bg.eventEmitter.on('change:uid', _uidChange);
 bg.eventEmitter.on('change:link', _linkChange);
 bg.eventEmitter.on('change:unread', _unreadChange);
 bg.StackExchangeInbox.on('change:token', _tokenChange);
+bg.StackExchangeInbox.on('found:account_id', _foundAccountID);
 addEventListener('unload', function() {
     bg.eventEmitter.off('socket', socketEventListener);
     bg.eventEmitter.off('change:uid', _uidChange);
     bg.eventEmitter.off('change:link', _linkChange);
     bg.eventEmitter.off('change:unread', _unreadChange);
     bg.StackExchangeInbox.off('change:token', _tokenChange);
+    bg.StackExchangeInbox.off('found:account_id', _foundAccountID);
 });
 
 // Extremely low priority, so put it here:
