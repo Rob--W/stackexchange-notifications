@@ -1,7 +1,17 @@
+/**
+ * postMessage is used to transport messages
+ * #... = Print message in console
+ * >... = Message from main to options
+ * Default = Message from options to main
+ */
 addEventListener('message', function(event) {
-    if (event.data.charAt(0) == '#') { // Proxied console.log
+    var type = /^#|>|/.exec(event.data)[0];
+    if (type == '#') { // Proxied console.log
         console.log(event.data.slice(1));
-        return;
+    } else if (type != '>') {
+        self.port.emit('options_message', event.data);
     }
-    self.port.emit('options_message', event.data);
+});
+self.port.on('to_options_message', function(message) {
+    document.defaultView.postMessage('>' + message, '*');
 });

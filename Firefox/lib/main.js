@@ -13,7 +13,8 @@
  */
 var {data} = require('self');
 var notifications = require('notifications');
-var {browserWindows} = require('windows');
+var windows = require('windows');
+var {browserWindows} = windows;
 var tabs = require('tabs');
 
 var optionsPanel = require('panel').Panel({
@@ -82,3 +83,17 @@ var icon = require('widget').Widget({
     panel: optionsPanel
 });
 exports.optionsPanel = optionsPanel;
+
+require('page-mod').PageMod({
+    // The following URL contains the addition of "robw", which ought to make the URL sufficiently unique to avoid conflicts with others
+    include: 'https://stackexchange.com/oauth/login_success?robw&*',
+    contentScript: 'window.close();',
+    contentScriptWhen: 'start',
+    onAttach: function(worker) {
+        // Example of hash: #access_token=ZxqGlCmJzvrr99D(9dcEwA))&state=3&expires=86400
+        var token = worker.url.match(/#.*?\baccess_token=([^&]+)/);
+        optionsPanel.port.emit('to_options_message', JSON.stringify({
+            auth_token: token ? token[1] : ''
+        }));
+    }
+});

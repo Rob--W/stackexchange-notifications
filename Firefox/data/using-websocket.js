@@ -75,7 +75,7 @@ function startSocket() {
         console_log('Opened WebSocket and subscribed to method ' + method);
         resetAttempts();
         // Get initial counts
-        // TODO: fetchInboxUnviewCount();
+        StackExchangeInbox.fetchUnreadCount();
         // Subscribe to inbox
         this.send(method);
         
@@ -159,8 +159,8 @@ function setLink(link) {
 // Get count
 var _unreadCount = 0;
 function setUnreadCount(count) {
-    _unreadCount = count;
-    showNotification();
+    _unreadCount = +count;
+    eventEmitter.emit('change:unread', _unreadCount);
 }
 function getUnreadCount() {
     return _unreadCount;
@@ -184,6 +184,13 @@ function showNotification() {
 eventEmitter.on('change:uid', function(id) {
     if (localStorage.getItem('autostart') != '0') startSocket();
 });
+// When unread count is set, show a notification
+eventEmitter.on('change:unread', showNotification);
+StackExchangeInbox.on('change:unread', setUnreadCount);
+StackExchangeInbox.on('error', function(error_message) {
+    console_log(error_message);
+});
+
 // Start socket with default settings if possible
 if (localStorage.getItem('autostart') != '0') startSocket();
 
@@ -202,7 +209,8 @@ exports.background = {
     setLink: setLink, // args: string link
     setUnreadCount: setUnreadCount, // args: count
     getUnreadCount: getUnreadCount,
-    showNotification: showNotification
+    showNotification: showNotification,
+    StackExchangeInbox: StackExchangeInbox // <-- from global scope
 };
 
 })(typeof exports == 'undefined' ? this : exports);

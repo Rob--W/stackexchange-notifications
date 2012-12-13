@@ -1,8 +1,10 @@
+// This file is identical for Chrome and Firefox, except for the following line
 var bg = background; // from using-websocket.js
 
 bg.ensureOneOptionsPage();
 var uid = document.getElementById('uid');
 var link = document.getElementById('link');
+var tokenButton = document.getElementById('grant-token');
 var save = document.getElementById('save');
 
 var statusSpan = document.getElementById('status');
@@ -15,6 +17,10 @@ uid.defaultValue = uid.value = bg.getUserID() || '';
 link.defaultValue = link.value = bg.getLink();
 link.placeholder = bg.generateDefaultLink('<uid>');
 link.title += ' Defaults to ' + bg.generateDefaultLink('<uid>');
+
+tokenButton.onclick = function() {
+    bg.StackExchangeInbox.auth.requestToken();
+};
 
 // When no preference is set, set autostart to true
 autostart.checked = localStorage.getItem('autostart') != '0';
@@ -194,6 +200,21 @@ function _uidChange(value) {
 function _linkChange(value) {
     link.defaultValue = link.value = value;
 }
+function _unreadChange(unreadCount) {
+    unreadCount = unreadCount ? '(' + unreadCount + ')' : '';
+    document.getElementById('unread-count').textContent = unreadCount;
+}
+_unreadChange(bg.getUnreadCount());
+function _tokenChange(token) {
+    if (token) {
+        tokenButton.value = 'Token accepted';
+        tokenButton.disabled = true;
+    } else {
+        tokenButton.value = 'Grant token';
+        tokenButton.disabled = false;
+    }
+}
+_tokenChange(bg.StackExchangeInbox.auth.getToken());
 
 function socketEventListener(status) {
     if (status == 'open') {
@@ -214,10 +235,14 @@ socketEventListener(bg.getSocketStatus() == 1 ? 'open' : 'close');
 bg.eventEmitter.on('socket', socketEventListener);
 bg.eventEmitter.on('change:uid', _uidChange);
 bg.eventEmitter.on('change:link', _linkChange);
+bg.eventEmitter.on('change:unread', _unreadChange);
+bg.StackExchangeInbox.on('change:token', _tokenChange);
 addEventListener('unload', function() {
     bg.eventEmitter.off('socket', socketEventListener);
     bg.eventEmitter.off('change:uid', _uidChange);
     bg.eventEmitter.off('change:link', _linkChange);
+    bg.eventEmitter.off('change:unread', _unreadChange);
+    bg.StackExchangeInbox.off('change:token', _tokenChange);
 });
 
 // Extremely low priority, so put it here:
