@@ -1,59 +1,36 @@
 var bg = chrome.extension.getBackgroundPage();
+
 bg.ensureOneOptionsPage();
 var uid = document.getElementById('uid');
 var link = document.getElementById('link');
+var tokenButton = document.getElementById('grant-token');
 var save = document.getElementById('save');
 
 var statusSpan = document.getElementById('status');
 var socketStart = document.getElementById('socket-start');
 var socketStop = document.getElementById('socket-stop');
 
-var incognito = document.getElementById('incognito');
 var autostart = document.getElementById('autostart');
-var run_in_bg = document.getElementById('run_in_bg');
 
 uid.defaultValue = uid.value = bg.getUserID() || '';
 link.defaultValue = link.value = bg.getLink();
 link.placeholder = bg.generateDefaultLink('<uid>');
-document.getElementById('default-link').textContent = bg.generateDefaultLink('<uid>');
+link.title += ' Defaults to ' + bg.generateDefaultLink('<uid>');
 
-// Open tabs in incognito window? 
-incognito.checked = !!localStorage.getItem('incognito');
-incognito.onchange = function() {
-    localStorage.setItem('incognito', this.checked ? '1' : '');
+tokenButton.onclick = function() {
+    bg.StackExchangeInbox.auth.requestToken();
 };
+
 // When no preference is set, set autostart to true
 autostart.checked = localStorage.getItem('autostart') != '0';
 autostart.onchange = function() {
     localStorage.setItem('autostart', this.checked ? '1' : '0');
 };
 
-// Continue running when Chrome is closed?
-var _chromePermissions = {
-    permissions: ['background']
-};
-function setPermissionCheckbox(state) {
-    run_in_bg.checked = state;
-}
-chrome.permissions.contains(_chromePermissions, setPermissionCheckbox);
-run_in_bg.onchange = function() {
-    if (this.checked) {
-        chrome.permissions.request(_chromePermissions, setPermissionCheckbox);
-    } else {
-        chrome.permissions.remove(_chromePermissions, function(result) { setPermissionCheckbox(!result); });
-    }
-};
-// Currently, there's only one optional permission. Don't check whether the added/removed permission is "background"
-chrome.permissions.onRemoved.addListener(function(permissions) {
-    setPermissionCheckbox(false);
-});
-chrome.permissions.onAdded.addListener(function(permissions) {
-    setPermissionCheckbox(true);
-});
-
 
 function updateSaveButtonState() {
-    save.disabled = document.getElementsByClassName('changed').length == 0;
+    // Disable Save if the fields are not changed and/or invalid
+    save.disabled = !document.querySelector('.changed:not(.invalid)');
 }
 updateSaveButtonState();
 // Save uid and link settings
@@ -223,6 +200,21 @@ function _uidChange(value) {
 function _linkChange(value) {
     link.defaultValue = link.value = value;
 }
+function _unreadChange(unreadCount) {
+    unreadCount = unreadCount ? '(' + unreadCount + ')' : '';
+    document.getElementById('unread-count').textContent = unreadCount;
+}
+_unreadChange(bg.getUnreadCount());
+function _tokenChange(token) {
+    if (token) {
+        tokenButton.value = 'Token accepted';
+        tokenButton.disabled = true;
+    } else {
+        tokenButton.value = 'Grant token';
+        tokenButton.disabled = false;
+    }
+}
+_tokenChange(bg.StackExchangeInbox.auth.getToken());
 
 function socketEventListener(status) {
     if (status == 'open') {
@@ -243,10 +235,14 @@ socketEventListener(bg.getSocketStatus() == 1 ? 'open' : 'close');
 bg.eventEmitter.on('socket', socketEventListener);
 bg.eventEmitter.on('change:uid', _uidChange);
 bg.eventEmitter.on('change:link', _linkChange);
+bg.eventEmitter.on('change:unread', _unreadChange);
+bg.StackExchangeInbox.on('change:token', _tokenChange);
 addEventListener('unload', function() {
     bg.eventEmitter.off('socket', socketEventListener);
     bg.eventEmitter.off('change:uid', _uidChange);
     bg.eventEmitter.off('change:link', _linkChange);
+    bg.eventEmitter.off('change:unread', _unreadChange);
+    bg.StackExchangeInbox.off('change:token', _tokenChange);
 });
 
 // Extremely low priority, so put it here:

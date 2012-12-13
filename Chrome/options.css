@@ -66,6 +66,9 @@ input:focus + div, input:hover + div, input + div:hover {
 #save {
     display: block;
 }
-#save, #start-socket, #stop-socket {
+#grant-token,
+#save,
+#start-socket,
+#stop-socket {
     padding: 5px;
 }

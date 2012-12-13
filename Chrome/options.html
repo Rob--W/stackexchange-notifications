@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="options.css" type="text/css">
 </head>
 <body>
-<h1>Desktop notifications for Stack Exchange</h1>
+<h1>Desktop notifications for Stack Exchange <span id="unread-count" title="Number of unread messages in inbox"></span></h1>
 <div class="container">
     <input type="text" id="uid" placeholder="Stack Exchange user id" tabindex="1">
     <span id="display-name"></span>
@@ -16,21 +16,25 @@
     <div>The desktop notification will open this URL on click. It's recommended to link to the inbox at your favourite Stack Exchange site.<br>
          Defaults to <span id="default-link"></span>.
     </div>
+    
+    <input type="button" id="grant-token" value="Grant token" tabindex="3">
+    <div>An access token is only needed if you want to see the actual unread count when the extension connects to the Stack Exchange.
+    </div>
 
-    <input type="button" id="save" value="Save" tabindex="3">
+    <input type="button" id="save" value="Save" tabindex="4">
     <div>
         Save changes. The socket connection will automatically be (re)started.
     </div>
 </div>
 <div class="container">
-    <label><input type="checkbox" id="autostart" tabindex="4"> Automatically start socket connection.</label><br>
-    <label><input type="checkbox" id="run_in_bg" tabindex="5"> Run extension even if all Chrome tabs are closed.</label><br>
-    <label><input type="checkbox" id="incognito" tabindex="6"> Open tabs in incognito mode.</label><br>
+    <label><input type="checkbox" id="autostart" tabindex="5"> Automatically start socket connection.</label><br>
+    <label><input type="checkbox" id="run_in_bg" tabindex="6"> Run extension even if all Chrome tabs are closed.</label><br>
+    <label><input type="checkbox" id="incognito" tabindex="7"> Open tabs in incognito mode.</label><br>
 </div>
 <div class="container">
     Socket status: <span id="status"></span>.<br>
-    <input type="button" value="Start" id="socket-start" tabindex="7">
-    <input type="button" value="Stop" id="socket-stop" tabindex="8">
+    <input type="button" value="Start" id="socket-start" tabindex="8">
+    <input type="button" value="Stop" id="socket-stop" tabindex="9">
 </div>
 <footer>
 Created by Rob W &lt;<a href="mailto:gwnRob@gmail.com" target="_blank">gwnRob@gmail.com</a>&gt;.<br>
@@ -39,5 +43,6 @@ Project home: <a href="https://github.com/Rob--W/stackexchange-notifications" ta
 </footer>
 
 <script src="options.js"></script>
+<script src="options-chromeonly.js"></script>
 </body>
 </html>
