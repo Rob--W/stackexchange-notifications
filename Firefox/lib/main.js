@@ -87,13 +87,18 @@ exports.optionsPanel = optionsPanel;
 require('page-mod').PageMod({
     // The following URL contains the addition of "robw", which ought to make the URL sufficiently unique to avoid conflicts with others
     include: 'https://stackexchange.com/oauth/login_success?robw&*',
-    contentScript: 'window.close();',
-    contentScriptWhen: 'start',
+    contentScriptFile: data.url('login_success.js'),
+    contentScriptWhen: 'end',
     onAttach: function(worker) {
         // Example of hash: #access_token=ZxqGlCmJzvrr99D(9dcEwA))&state=3&expires=86400
-        var token = worker.url.match(/#.*?\baccess_token=([^&]+)/);
-        optionsPanel.port.emit('to_options_message', JSON.stringify({
-            auth_token: token ? token[1] : ''
-        }));
+        worker.port.on('message', function(message) {
+            optionsPanel.port.emit('to_options_message', message);
+            // `worker.tab.on('close')` is unreliable, so use this instead..:
+            require('timers').setTimeout(function() {
+                if (!optionsPanel.isShowing) {
+                    optionsPanel.show();
+                }
+            }, 300);
+        });
     }
 });

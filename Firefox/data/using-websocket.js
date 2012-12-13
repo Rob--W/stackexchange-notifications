@@ -190,6 +190,9 @@ StackExchangeInbox.on('change:unread', setUnreadCount);
 StackExchangeInbox.on('error', function(error_message) {
     console_log(error_message);
 });
+StackExchangeInbox.on('found:account_id', function(account_id) {
+    setUserID(account_id);
+});
 
 // Start socket with default settings if possible
 if (localStorage.getItem('autostart') != '0') startSocket();

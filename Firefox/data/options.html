@@ -18,7 +18,7 @@ window.onerror = function(message, filename, lineno) {
 <body>
 <h1>Desktop notifications for Stack Exchange <span id="unread-count" title="Number of unread messages in inbox"></span></h1>
 <div class="container">
-    <input type="text" id="uid" placeholder="Stack Exchange user id" tabindex="1" title="This numeric ID can be found by visiting your Stack Exchange profile.">
+    <input type="text" id="uid" placeholder="Stack Exchange user id" tabindex="1" title="This numeric ID can be found by visiting your Stack Exchange profile, or by clicking the &quot;Grant token&quot; button below.">
     <span id="display-name"></span>
 
     <input type="url" id="link" tabindex="2" title="The desktop notification will open this URL on click. It's recommended to link to the inbox at your favourite Stack Exchange site.">
@@ -26,7 +26,6 @@ window.onerror = function(message, filename, lineno) {
     <input type="button" id="save" value="Save" tabindex="3" title="Save changes. The socket connection will automatically be (re)started.">
     
     <input type="button" id="grant-token" value="Grant token" tabindex="4" title="An access token is only needed if you want to see the actual unread count when the add-on connects to the Stack Exchange.">
-    </div>
 </div>
 <div class="container">
     <label title="Start listening to inbox notifications when Firefox starts"><input type="checkbox" id="autostart" tabindex="5"> Automatically start socket connection.</label><br>
