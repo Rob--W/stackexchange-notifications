@@ -1,7 +1,13 @@
-This extension provides real-time desktop notifications for notifications for the Stack Exchange.
+This extension provides [real-time desktop notifications for Stack Exchange's inbox](http://stackapps.com/q/3780/9699?real-time-desktop-notifications-for-stack-exchange-inbox-chrome-extension).
 
 ## Chrome extension
-After installing the extension, set the user ID (at the options page), and you will get a desktop notification if a new message has been received.
+After installing the extension, visit Options and click on the "Grant Token"
+button. Upon click, a Stack Exchange authentication dialog will open. Grant
+the token, and the extension will autofill the user ID. Then, you will
+immediately get notified of the unread message count in your inbox.
+
+(Alternatively, you can manually set the user ID, but then the extension will
+not be able to count the number of unread messages.)
 
 https://chrome.google.com/webstore/detail/desktop-notifications-for/ijglncoabcgieiokjmgdogpefdblmnle
 
@@ -9,7 +15,10 @@ https://chrome.google.com/webstore/detail/desktop-notifications-for/ijglncoabcgi
 The extension has been ported to a Firefox add-on since version 1.5!  
 Install it from https://addons.mozilla.org/en-US/firefox/addon/real-time-desktop-notificat/
 
-The add-on can be configured by clicking on the StackExchange icon at the [add-on bar](http://support.mozilla.org/en-US/kb/add-on-bar-quick-access-to-add-ons) (located at the bottom of Firefox's window). If you don't see this bar, press `Ctrl` + `/` to show it.
+The add-on can be configured by clicking on the StackExchange icon at the
+[add-on bar](http://support.mozilla.org/en-US/kb/add-on-bar-quick-access-to-add-ons)
+(located at the bottom of Firefox's window).
+If you don't see this bar, press `Ctrl` + `/` to show it.
 
 ## License
 Copyright 2012 Rob W <gwnRob@gmail.com>
