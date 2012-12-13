@@ -1,7 +1,7 @@
 {
     "name": "Desktop Notifications for Stack Exchange",
     "description": "Real-time desktop notifications for the Stack Exchange.",
-    "version": "1.5.2",
+    "version": "1.5.3",
     "manifest_version": 2,
     "background": {
         "scripts": ["using-websocket.js"]
