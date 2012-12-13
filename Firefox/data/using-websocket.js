@@ -74,14 +74,16 @@ function startSocket() {
     ws.onopen = function() {
         console_log('Opened WebSocket and subscribed to method ' + method);
         resetAttempts();
+        // Get initial counts
+        // TODO: fetchInboxUnviewCount();
         // Subscribe to inbox
         this.send(method);
         
         // Watch connectivity
         lastHeartbeat = Date.now();
         socketWatcher = setInterval(function() {
-            var diff = Math.round((Date.now() - lastHeartbeat) / 60 / 000);
-            if (diff > 3*5) {
+            var diff = Math.round((Date.now() - lastHeartbeat) / 60 / 1000);
+            if (diff > 6) {
                 console_log('Last heartbeat was ' + diff + ' seconds ago. Resetting socket...');
                 // Reset socket when the socket died (heartbeat should occur every 5 minutes)
                 stopSocket();
@@ -89,7 +91,7 @@ function startSocket() {
                 // After stopping, the socket will automatically be recreated because
                 // `socket_keep_alive` is still true
             }
-        }, 60*1000);
+        }, 5000); // Small delay, because getting a timestamp and calculating the diff is inexpensive
 
         eventEmitter.emit('socket', 'open');
     };
