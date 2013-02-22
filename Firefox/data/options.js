@@ -125,7 +125,7 @@ function uidToName(val) {
             document.getElementById('display-name').textContent = '<error 1>';
         }
     };
-    _api_xhr.open('GET', 'http://api.stackexchange.com/2.1/users/' + val + '/associated?pagesize=1&filter=!T*uyp79PvoVzKR.KV1');
+    _api_xhr.open('GET', 'https://api.stackexchange.com/2.1/users/' + val + '/associated?pagesize=1&filter=!T*uyp79PvoVzKR.KV1');
     _currentlyCheckingUID = val;
     document.getElementById('display-name').innerHTML = '<img src="data:image/gif;base64,' +
         'R0lGODlhEgAEAKEAAH9/fwAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQJDwACACwAAAAAEgAE' +
@@ -176,7 +176,7 @@ function siteuidToName(result, /*number*/ uid_value) {
             document.getElementById('display-name').textContent = '<error 2>';
         }
     };
-    _api_xhr.open('GET', 'http://api.stackexchange.com/2.1/users/' + siteuid + '?site=' + site + '&filter=!)RwZ73MVf)pA)F7A2gmXoGZm');
+    _api_xhr.open('GET', 'https://api.stackexchange.com/2.1/users/' + siteuid + '?site=' + site + '&filter=!)RwZ73MVf)pA)F7A2gmXoGZm');
     _api_xhr.send();
 }
 
