@@ -3,7 +3,7 @@
     "license": "MIT",
     "author": "Rob W <gwnRob@gmail.com>",
     "homepage": "http://stackapps.com/q/3780/9699",
-    "version": "1.6.2",
+    "version": "1.6.3",
     "fullName": "Desktop notifications for Stack Exchange's inbox",
     "id": "stackexchange-notifications",
     "description": "Shows desktop notifications for Stack Exchange's inbox in real-time."

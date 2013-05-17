@@ -11,6 +11,7 @@
  * - The `eventEmitter` object is removed. All `eventEmitter` references were replaced by `self.port.emit('eventEmitter', ...)` / `self.port.on('eventEmitter', ...)`.
  * - When logic is migrated away from a function. it's put in main.js, and called isong an event emitter. The event's name is prefixed with the function's name, a colon, followed by a short description.
  */
+/* jshint moz:true */
 var {data} = require('self');
 var notifications = require('notifications');
 var windows = require('windows');
@@ -35,7 +36,7 @@ optionsPanel.port.on('options_message', function(message) {
         break;
         case 'showNotification':
             var matchesURL = function(url) {
-                return message.data.link.indexOf(url) == 0;
+                return message.data.link.indexOf(url) === 0;
             };
             notifications.notify({
                 title: 'StackExchange\'s inbox',
@@ -43,7 +44,7 @@ optionsPanel.port.on('options_message', function(message) {
                 data: message.data.link,
                 onClick: function(link) {
                     // Activate existing tab in active window
-                    for each (var tab in browserWindows.activeWindow.tabs) {
+                    for each (let tab in browserWindows.activeWindow.tabs) {
                         if (matchesURL(tab.url)) {
                             console.log('Activating existing tab in active window');
                             tab.activate();
@@ -52,12 +53,14 @@ optionsPanel.port.on('options_message', function(message) {
                         }
                     }
                     // Active existing tab in any window
-                    for each (var window in browserWindows) {
-                        if (matchesURL(tab.url)) {
-                            console.log('Activating existing tab');
-                            tab.activate();
-                            window.activate();
-                            return;
+                    for each (let window in browserWindows) {
+                        for each (let tab in window.tabs) {
+                            if (matchesURL(tab.url)) {
+                                console.log('Activating existing tab');
+                                tab.activate();
+                                window.activate();
+                                return;
+                            }
                         }
                     }
                     // At this point, the URL is unknown
