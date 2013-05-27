@@ -222,11 +222,18 @@ function showNotification() {
     var notID = _currentNotificationID = new Date().getTime();
     if (_notification) _notification.close();
     if (getUnreadCount() > 0) {
-        _notification = webkitNotifications.createHTMLNotification(chrome.extension.getURL('notification.html'));
+        var iconURL = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+        var head = getUnreadCount() + ' unread messages in your inbox';
+        var body = '';
+        _notification = webkitNotifications.createNotification(iconURL, head, body);
         _notification.onclose = function() {
             if (_currentNotificationID == notID) {
                 _notification = null;
             }
+        };
+        _notification.onclick = function() {
+            openTab(getLink() || generateDefaultLink());
+            _notification.close();
         };
         _notification.show();
     }
