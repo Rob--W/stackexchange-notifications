@@ -15,3 +15,6 @@ addEventListener('message', function(event) {
 self.port.on('to_options_message', function(message) {
     document.defaultView.postMessage('>' + message, '*');
 });
+// Synchronously pass the token to the options panel
+// The attribute will be removed upon first read
+document.documentElement.setAttribute('token', self.options.token || '');

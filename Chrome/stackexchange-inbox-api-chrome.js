@@ -10,6 +10,17 @@ StackExchangeInbox.auth.requestToken = function() {
         width: Math.min(screen.availWidth, 660)
     });
 };
+StackExchangeInbox.auth.getToken = function getToken() {
+    return localStorage.getItem('se_auth_token') || '';
+};
+StackExchangeInbox.auth.setToken = function setToken(token) {
+    if (token) {
+        localStorage.setItem('se_auth_token', token);
+    } else {
+        localStorage.removeItem('se_auth_token');
+    }   
+    StackExchangeInbox.emit('change:token', token);
+};
 // Handle successful authentication
 chrome.extension.onMessage.addListener(function(message, sender) {
     if ('auth_token' in message) {

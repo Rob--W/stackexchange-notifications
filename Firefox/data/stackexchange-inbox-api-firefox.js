@@ -2,6 +2,31 @@
 StackExchangeInbox.auth.requestToken = function() {
     window.open(StackExchangeInbox.auth.API_AUTH_URL, '', 'width=660,height=480');
 };
+(function() {
+    // Received from main.js, via bridge.js
+    var cachedToken = document.documentElement.getAttribute('token') || '';
+    document.documentElement.removeAttribute('token');
+
+    StackExchangeInbox.auth.getToken = function getToken() {
+        console.error('getToken ' + cachedToken);
+        return cachedToken;
+    };
+    StackExchangeInbox.auth.setToken = function setToken(token) {
+        cachedToken = token;
+        console.error('setToken ' + token);
+        postMessage(JSON.stringify({
+            method: 'auth.setToken',
+            token: token
+        }), '*');
+    };
+    // Migrate from old version
+    // Don't store the token in localStorage, but in Firefox's password manager
+    if (!cachedToken && localStorage.getItem('se_auth_token')) {
+        StackExchangeInbox.auth.setToken(localStorage.getItem('se_auth_token'));
+        localStorage.removeItem('se_auth_token');
+    }
+})();
+
 // Handle successful authentication
 addEventListener('message', function(e) {
     if (!/^>/.test(e.data)) return;

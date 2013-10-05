@@ -30,7 +30,7 @@
         '!)r4d5VTgcrvstSSV)86a',        // is_unread + answer_id
         '!LSz0qj2Wk0sCvqoqo6.FgX'       // is_unread + answer_id + site
     ];
-    var API_MINIMUM_PAGESIZE = 40
+    var API_MINIMUM_PAGESIZE = 40;
     var API_MAXIMUM_PAGESIZE = 100;
 
     /////////////////////
@@ -77,17 +77,12 @@
     function requestToken() {
         throw Error('api.requestToken not implemented! Write an environment-specific adapter for this method!');
     }
-
     function getToken() {
-        return localStorage.getItem('se_auth_token') || '';
+        throw new Error('api.getToken not implemented! Write an environment-specific adapter for this method!');
     }
     function setToken(token) {
-        if (token) {
-            localStorage.setItem('se_auth_token', token);
-        } else {
-            localStorage.removeItem('se_auth_token');
-        }
-        StackExchangeInbox.emit('change:token', token);
+        throw new Error('api.setToken not implemented! Write an environment-specific adapter for this method!');
+        //StackExchangeInbox.emit('change:token', token);
     }
 
 
@@ -104,11 +99,11 @@
             if (_api_filter >= API_FILTERS.length) {
                 // Next filter does not exists, use first one.
                 _api_filter = 0;
-            };
+            }
         }
         var url = 'https://api.stackexchange.com/2.1/inbox';
         url += '?key=' + API_KEY;
-        url += '&access_token=' + getToken();
+        url += '&access_token=' + StackExchangeInbox.auth.getToken();
         url += '&filter=' + API_FILTERS[_api_filter];
         url += '&pagesize=' + _api_pagesize;
         return url;
@@ -116,7 +111,7 @@
 
     // Get inbox entries
     function fetchUnreadCount() {
-        if (!getToken()) {
+        if (!StackExchangeInbox.auth.getToken()) {
             // No token? No request!
             StackExchangeInbox.emit('error', 'No access token found, cannot connect to StackExchange API');
             return;
@@ -130,7 +125,7 @@
                 StackExchangeInbox.emit('error', 'API responded with ' + data.error_id + ' ' + data.error_name + ', ' + data.error_message);
                 if (data.error_id == 403) {
                     // Token is invalid, Discard it
-                    setToken('');
+                    StackExchangeInbox.auth.setToken('');
                 }
                 return;
             }

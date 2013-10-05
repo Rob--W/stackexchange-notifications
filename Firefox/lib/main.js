@@ -18,15 +18,44 @@ var windows = require('windows');
 var {browserWindows} = windows;
 var tabs = require('tabs');
 
-var optionsPanel = require('panel').Panel({
-    width: 600,
-    height: 300,
-    contentURL: data.url('options.html'),
-    contentScriptFile: data.url('bridge.js'),
-    contentScriptWhen: 'start'
+// Some placeholder username.
+const DUMMY_AUTH_USERNAME = 'dummy_auth_username';
+
+var optionsPanel;
+// Read the optional auth token from storage and launch the panel
+require('passwords').search({
+    realm: 'stackexchange-notifications',
+    url: 'addon:stackexchange-notifications',
+    username: DUMMY_AUTH_USERNAME,
+    onComplete: function(credentials) {
+        var token = credentials[0] && credentials[0].password || '';
+        onReady(token);
+    }
 });
-// Handle page -> content script -> main.js message
-optionsPanel.port.on('options_message', function(message) {
+
+
+function onReady(token) {
+    optionsPanel = require('panel').Panel({
+        width: 600,
+        height: 300,
+        contentURL: data.url('options.html'),
+        contentScriptFile: data.url('bridge.js'),
+        contentScriptWhen: 'start',
+        contentScriptOptions: {
+            token: token
+        }
+    });
+    // Handle page -> content script -> main.js message
+    optionsPanel.port.on('options_message', onOptionsMessage);
+    // The panel associated with the widget is responsible for creating and maintaining a socket connection
+    require('widget').Widget({
+        id: 'widget-desktop-notifications-se',
+        label: 'Real-time desktop notifications for Stack Exchange\'s inbox',
+        contentURL: data.url('icon.png'),
+        panel: optionsPanel
+    });
+}
+function onOptionsMessage(message) {
     message = JSON.parse(message);
     switch (message.method) {
         case 'showOptions':
@@ -75,17 +104,37 @@ optionsPanel.port.on('options_message', function(message) {
                 }
             });
         break;
+        case 'auth.setToken':
+            // There's only a setter, because the stored token is passed to the
+            // panel on first run and cached in a local variable.
+            // This flow is used to achieve synchronous getToken / setToken
+            if (message.token) {
+                removeCredentials(function() {
+                    require('passwords').store({
+                        realm: 'stackexchange-notifications',
+                        url: 'addon:stackexchange-notifications',
+                        username: DUMMY_AUTH_USERNAME,
+                        password: message.token,
+                        onComplete: function() { /* NOOP */ },
+                        onError: function() { /* NOOP */ }
+                    });
+                });
+            } else {
+                removeCredentials(function() { /* NOOP */ });
+            }
+        break;
     }
-});
+    function removeCredentials(anyCallback) {
+        require('passwords').remove({
+            realm: 'stackexchange-notifications',
+            url: 'addon:stackexchange-notifications',
+            username: DUMMY_AUTH_USERNAME,
+            onComplete: anyCallback,
+            onError: anyCallback
+        });
+    }
+}
 
-// The icon (widget) which is responsible for creating and maintaining a socket connection
-var icon = require('widget').Widget({
-    id: 'widget-desktop-notifications-se',
-    label: 'Real-time desktop notifications for Stack Exchange\'s inbox',
-    contentURL: data.url('icon.png'),
-    panel: optionsPanel
-});
-exports.optionsPanel = optionsPanel;
 
 require('page-mod').PageMod({
     // The following URL contains the addition of "robw", which ought to make the URL sufficiently unique to avoid conflicts with others
@@ -93,8 +142,8 @@ require('page-mod').PageMod({
     contentScriptFile: data.url('login_success.js'),
     contentScriptWhen: 'end',
     onAttach: function(worker) {
-        // Example of hash: #access_token=ZxqGlCmJzvrr99D(9dcEwA))&state=3&expires=86400
         worker.port.on('message', function(message) {
+            // message = {auth_token: string, account_id: string}
             optionsPanel.port.emit('to_options_message', message);
             // `worker.tab.on('close')` is unreliable, so use this instead..:
             require('timers').setTimeout(function() {
