@@ -8,12 +8,10 @@ StackExchangeInbox.auth.requestToken = function() {
     document.documentElement.removeAttribute('token');
 
     StackExchangeInbox.auth.getToken = function getToken() {
-        console.error('getToken ' + cachedToken);
         return cachedToken;
     };
     StackExchangeInbox.auth.setToken = function setToken(token) {
         cachedToken = token;
-        console.error('setToken ' + token);
         postMessage(JSON.stringify({
             method: 'auth.setToken',
             token: token

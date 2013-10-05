@@ -12,18 +12,18 @@
  * - When logic is migrated away from a function. it's put in main.js, and called isong an event emitter. The event's name is prefixed with the function's name, a colon, followed by a short description.
  */
 /* jshint moz:true */
-var {data} = require('self');
-var notifications = require('notifications');
-var windows = require('windows');
-var {browserWindows} = windows;
-var tabs = require('tabs');
+const { data } = require('sdk/self');
+const notifications = require('sdk/notifications');
+const windows = require('sdk/windows');
+const { browserWindows } = windows;
+const tabs = require('sdk/tabs');
 
 // Some placeholder username.
 const DUMMY_AUTH_USERNAME = 'dummy_auth_username';
 
 var optionsPanel;
 // Read the optional auth token from storage and launch the panel
-require('passwords').search({
+require('sdk/passwords').search({
     realm: 'stackexchange-notifications',
     url: 'addon:stackexchange-notifications',
     username: DUMMY_AUTH_USERNAME,
@@ -35,7 +35,7 @@ require('passwords').search({
 
 
 function onReady(token) {
-    optionsPanel = require('panel').Panel({
+    optionsPanel = require('sdk/panel').Panel({
         width: 600,
         height: 300,
         contentURL: data.url('options.html'),
@@ -48,7 +48,7 @@ function onReady(token) {
     // Handle page -> content script -> main.js message
     optionsPanel.port.on('options_message', onOptionsMessage);
     // The panel associated with the widget is responsible for creating and maintaining a socket connection
-    require('widget').Widget({
+    require('sdk/widget').Widget({
         id: 'widget-desktop-notifications-se',
         label: 'Real-time desktop notifications for Stack Exchange\'s inbox',
         contentURL: data.url('icon.png'),
@@ -110,7 +110,7 @@ function onOptionsMessage(message) {
             // This flow is used to achieve synchronous getToken / setToken
             if (message.token) {
                 removeCredentials(function() {
-                    require('passwords').store({
+                    require('sdk/passwords').store({
                         realm: 'stackexchange-notifications',
                         url: 'addon:stackexchange-notifications',
                         username: DUMMY_AUTH_USERNAME,
@@ -125,7 +125,7 @@ function onOptionsMessage(message) {
         break;
     }
     function removeCredentials(anyCallback) {
-        require('passwords').remove({
+        require('sdk/passwords').remove({
             realm: 'stackexchange-notifications',
             url: 'addon:stackexchange-notifications',
             username: DUMMY_AUTH_USERNAME,
@@ -136,7 +136,7 @@ function onOptionsMessage(message) {
 }
 
 
-require('page-mod').PageMod({
+require('sdk/page-mod').PageMod({
     // The following URL contains the addition of "robw", which ought to make the URL sufficiently unique to avoid conflicts with others
     include: 'https://stackexchange.com/oauth/login_success?robw&*',
     contentScriptFile: data.url('login_success.js'),
@@ -146,7 +146,7 @@ require('page-mod').PageMod({
             // message = {auth_token: string, account_id: string}
             optionsPanel.port.emit('to_options_message', message);
             // `worker.tab.on('close')` is unreliable, so use this instead..:
-            require('timers').setTimeout(function() {
+            require('sdk/timers').setTimeout(function() {
                 if (!optionsPanel.isShowing) {
                     optionsPanel.show();
                 }
