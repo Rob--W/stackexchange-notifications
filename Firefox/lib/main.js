@@ -13,7 +13,7 @@
  */
 /* jshint moz:true */
 const { data } = require('sdk/self');
-const notifications = require('sdk/notifications');
+const notifications = require('longlived-notifications');
 const windows = require('sdk/windows');
 const { browserWindows } = windows;
 const tabs = require('sdk/tabs');
@@ -103,6 +103,9 @@ function onOptionsMessage(message) {
                     });
                 }
             });
+        break;
+        case 'hideNotification':
+            notifications.close();
         break;
         case 'auth.setToken':
             // There's only a setter, because the stored token is passed to the

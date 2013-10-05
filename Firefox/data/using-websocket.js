@@ -177,6 +177,8 @@ function showNotification() {
                 link: getLink() || generateDefaultLink()
             }
         }), '*');
+    } else {
+        postMessage('{"method":"hideNotification"}', '*');
     }
 }
 
