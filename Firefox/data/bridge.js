@@ -18,3 +18,8 @@ self.port.on('to_options_message', function(message) {
 // Synchronously pass the token to the options panel
 // The attribute will be removed upon first read
 document.documentElement.setAttribute('token', self.options.token || '');
+// Synchronously pass the initial data used to populate a fake localStorage object
+document.documentElement.setAttribute('localStorageData', JSON.stringify(self.options.localStorageData));
+document.addEventListener('localStorageChange', function(event) {
+    self.port.emit('localStorageChange', event.detail);
+});

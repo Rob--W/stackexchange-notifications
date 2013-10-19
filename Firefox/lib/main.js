@@ -17,9 +17,12 @@ const notifications = require('longlived-notifications');
 const windows = require('sdk/windows');
 const { browserWindows } = windows;
 const tabs = require('sdk/tabs');
+const sstorage = require('sdk/simple-storage').storage;
 
 // Some placeholder username.
 const DUMMY_AUTH_USERNAME = 'dummy_auth_username';
+
+if (!sstorage.localStorageData) sstorage.localStorageData = {};
 
 var optionsPanel;
 // Read the optional auth token from storage and launch the panel
@@ -42,9 +45,12 @@ function onReady(token) {
         contentScriptFile: data.url('bridge.js'),
         contentScriptWhen: 'start',
         contentScriptOptions: {
+            localStorageData: sstorage.localStorageData,
             token: token
         }
     });
+    // Store the data in simple-storage, because localStorage may be cleared by accident (#4)
+    optionsPanel.port.on('localStorageChange', onStorageChange);
     // Handle page -> content script -> main.js message
     optionsPanel.port.on('options_message', onOptionsMessage);
     // The panel associated with the widget is responsible for creating and maintaining a socket connection
@@ -54,6 +60,15 @@ function onReady(token) {
         contentURL: data.url('icon.png'),
         panel: optionsPanel
     });
+}
+function onStorageChange(mutation) {
+    if (mutation.type === 'setItem') {
+        sstorage.localStorageData[mutation.key] = mutation.value;
+    } else if (mutation.type === 'removeItem') {
+        delete sstorage.localStorageData[mutation.key];
+    } else {
+        console.log('Unknown mutation: ' + mutation.type + ' for ' + mutation.key);
+    }
 }
 function onOptionsMessage(message) {
     message = JSON.parse(message);

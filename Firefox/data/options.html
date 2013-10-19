@@ -9,6 +9,7 @@ window.onerror = function(message, filename, lineno) {
     postMessage('#' + message + ' in ' + filename.split('/').pop() + ':' + lineno, '*');
 };
 </script>
+<script src="localStorage-proxy.js"></script>
 <script src="stackexchange-inbox-api.js"></script>
 <script src="stackexchange-inbox-api-firefox.js"></script>
 <script src="using-websocket.js"></script>
