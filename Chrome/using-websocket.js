@@ -1,4 +1,4 @@
-/*global */
+/* globals chrome, StackExchangeInbox */
 // Highly specific piece of code for subscribing to inbox notifications
 var METHOD; // UID + '-inbox';
 
@@ -119,6 +119,8 @@ function startSocket() {
 
     // Socket, don't die!
     socket_keep_alive = true;
+    var lastHeartbeat; // Used to check whether or not the connection died
+    var socketWatcher; // Holds reference to setInterval
 
     var method = uid + '-inbox';
     ws = new WebSocket(SOCKET_URL);
@@ -218,13 +220,44 @@ function getUnreadCount() {
 
 // Notification
 var _notification, _currentNotificationID;
+var CHROME_NOTIFICATION_ID = 'se-notifications';
+var chromeNotificationSupportsClick = true;
+if (chrome.notifications) {
+    chrome.notifications.onClicked.addListener(function(notificationId) {
+        if (notificationId === CHROME_NOTIFICATION_ID) {
+            openTab(getLink() || generateDefaultLink());
+            chrome.notifications.clear(notificationId, function() {});
+        }
+    });
+}
 function showNotification() {
     var notID = _currentNotificationID = new Date().getTime();
     if (_notification) _notification.close();
+    else if (chrome.notifications) chrome.notifications.clear(CHROME_NOTIFICATION_ID, function() {});
     if (getUnreadCount() > 0) {
-        var iconURL = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-        var head = getUnreadCount() + ' unread messages in your inbox';
+        var iconURL = chrome.runtime.getURL('icon.png');
+        var body = getUnreadCount() + ' unread messages in your inbox';
         var body = '';
+        if (!window.webkitNotifications) {
+            var notificationOptions = {
+                type: 'basic',
+                iconUrl: iconURL,
+                title: head,
+                message: body
+            };
+            if (chromeNotificationSupportsClick) {
+                notificationOptions.isClickable = true;
+            }
+            try {
+                chrome.notifications.create(CHROME_NOTIFICATION_ID, notificationOptions, function() {});
+            } catch (e) {
+                delete notificationOptions.isClickable;
+                chromeNotificationSupportsClick = false;
+                // This feature was added in r229585 (http://crbug.com/304923)
+                chrome.notifications.create(CHROME_NOTIFICATION_ID, notificationOptions, function() {});
+            }
+            return;
+        }
         _notification = webkitNotifications.createNotification(iconURL, head, body);
         _notification.onclose = function() {
             if (_currentNotificationID == notID) {

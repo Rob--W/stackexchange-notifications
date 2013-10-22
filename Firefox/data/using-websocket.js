@@ -65,7 +65,7 @@ function startSocket() {
 
     // Socket, don't die!
     socket_keep_alive = true;
-    var lastHeartbeat; // Used ot check whether or not the connection died
+    var lastHeartbeat; // Used to check whether or not the connection died
     var socketWatcher; // Holds reference to setInterval
     
     var method = uid + '-inbox';

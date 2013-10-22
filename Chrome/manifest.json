@@ -23,5 +23,8 @@
         "https://api.stackexchange.com/2.1/inbox*",
         "notifications",
         "tabs"
+    ],
+    "web_accessible_resources": [
+        "icon.png"
     ]
 }
