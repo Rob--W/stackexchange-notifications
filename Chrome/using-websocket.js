@@ -65,7 +65,7 @@ function openTab(url) {
 }
 // Open options page, make sure that only one is opened
 function ensureOneOptionsPage() {
-    var options_url = chrome.extension.getURL('options.html');
+    var options_url = chrome.runtime.getURL('options.html');
     chrome.tabs.query({
         url: options_url
     }, function(tabs) {
@@ -107,7 +107,7 @@ function startSocket() {
     if (!uid) {
         console.log('Did not start socket because no UID is found');
         chrome.tabs.query({
-            url: chrome.extension.getURL('options.html'),
+            url: chrome.runtime.getURL('options.html'),
             active: true
         }, function(tabs) {
             if (!tabs.length && confirm('No user ID found. Want to configure Desktop Notifications for the Stack Exchange?')) {

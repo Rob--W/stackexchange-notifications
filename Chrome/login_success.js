@@ -4,7 +4,7 @@ var account_id = document.querySelector('a[href*="/users/"]');
 if (account_id) {
     account_id = account_id.getAttribute('href').match(/\d+/)[0];
 }
-chrome.extension.sendMessage({
+chrome.runtime.sendMessage({
     auth_token: token && token[1],
     account_id: account_id
 });

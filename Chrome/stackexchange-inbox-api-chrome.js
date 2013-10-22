@@ -22,7 +22,7 @@ StackExchangeInbox.auth.setToken = function setToken(token) {
     StackExchangeInbox.emit('change:token', token);
 };
 // Handle successful authentication
-chrome.extension.onMessage.addListener(function(message, sender) {
+chrome.runtime.onMessage.addListener(function(message, sender) {
     if ('auth_token' in message) {
         if (message.auth_token) {
             StackExchangeInbox.auth.setToken(message.auth_token);
