@@ -236,7 +236,7 @@ function showNotification() {
     else if (chrome.notifications) chrome.notifications.clear(CHROME_NOTIFICATION_ID, function() {});
     if (getUnreadCount() > 0) {
         var iconURL = chrome.runtime.getURL('icon.png');
-        var body = getUnreadCount() + ' unread messages in your inbox';
+        var head = getUnreadCount() + ' unread messages in your inbox';
         var body = '';
         if (!window.webkitNotifications) {
             var notificationOptions = {

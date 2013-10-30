@@ -1,4 +1,5 @@
 var incognito = document.getElementById('incognito');
+var autostart = document.getElementById('autostart');
 var run_in_bg = document.getElementById('run_in_bg');
 
 document.getElementById('default-link').textContent = bg.generateDefaultLink('<uid>');
