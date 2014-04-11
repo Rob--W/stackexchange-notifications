@@ -3,7 +3,7 @@
 var METHOD; // UID + '-inbox';
 
 // Maintain WebSocket connection
-var SOCKET_URL = 'ws://sockets.ny.stackexchange.com:80';
+var SOCKET_URL = 'wss://qa.sockets.stackexchange.com';
 
 // Very simple event emitter
 var eventEmitter = {
