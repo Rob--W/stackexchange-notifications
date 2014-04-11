@@ -1,7 +1,7 @@
 {
     "name": "Desktop Notifications for Stack Exchange",
     "description": "Real-time desktop notifications for the Stack Exchange.",
-    "version": "1.6.5.1",
+    "version": "1.6.6",
     "manifest_version": 2,
     "background": {
         "scripts": [
