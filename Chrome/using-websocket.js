@@ -232,7 +232,7 @@ if (chrome.notifications) {
 }
 function showNotification() {
     var notID = _currentNotificationID = new Date().getTime();
-    if (_notification) _notification.close();
+    if (_notification) _notification.cancel();
     else if (chrome.notifications) chrome.notifications.clear(CHROME_NOTIFICATION_ID, function() {});
     if (getUnreadCount() > 0) {
         var iconURL = chrome.runtime.getURL('icon.png');
@@ -266,7 +266,7 @@ function showNotification() {
         };
         _notification.onclick = function() {
             openTab(getLink() || generateDefaultLink());
-            _notification.close();
+            _notification.cancel();
         };
         _notification.show();
     }
