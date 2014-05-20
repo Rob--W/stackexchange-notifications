@@ -5,7 +5,7 @@ StackExchangeInbox.auth.requestToken = function() {
         focused: true,
         type: 'popup',
         top: 0,
-        left: Math.max(0, (screen.availWidth - 660) / 2),
+        left: Math.max(0, Math.round((screen.availWidth - 660) / 2)),
         height: Math.min(screen.availHeight, 480),
         width: Math.min(screen.availWidth, 660)
     });
