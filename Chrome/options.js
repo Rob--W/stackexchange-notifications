@@ -13,7 +13,7 @@ var socketStop = document.getElementById('socket-stop');
 var autostart = document.getElementById('autostart');
 
 uid.defaultValue = uid.value = bg.getUserID() || '';
-link.defaultValue = link.value = bg.getLink();
+link.defaultValue = link.value = bg.getLink() || '';
 link.placeholder = bg.generateDefaultLink('<uid>');
 link.title += ' Defaults to ' + bg.generateDefaultLink('<uid>');
 
