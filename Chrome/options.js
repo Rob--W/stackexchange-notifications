@@ -1,3 +1,6 @@
+// This file is identical for Chrome and Firefox, except for the following line
+// and the end of this file
+window.addEventListener('HackyLocalStorageReady', function() {
 var bg = chrome.extension.getBackgroundPage();
 
 bg.ensureOneOptionsPage();
@@ -256,3 +259,5 @@ addEventListener('unload', function() {
 // Extremely low priority, so put it here:
 // (this inserts the name corresponding to the user id after the #uid field))
 uidToName(bg.getUserID());
+
+}); // End of addEventListener('HackyLocalStorageReady'

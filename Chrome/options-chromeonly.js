@@ -1,3 +1,6 @@
+window.addEventListener('HackyLocalStorageReady', function() {
+
+var bg = chrome.extension.getBackgroundPage();
 var incognito = document.getElementById('incognito');
 var autostart = document.getElementById('autostart');
 var run_in_bg = document.getElementById('run_in_bg');
@@ -37,3 +40,5 @@ chrome.permissions.onRemoved.addListener(function(permissions) {
 chrome.permissions.onAdded.addListener(function(permissions) {
     setPermissionCheckbox(true);
 });
+
+}); // End of addEventListener('HackyLocalStorageReady'

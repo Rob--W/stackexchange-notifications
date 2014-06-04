@@ -5,6 +5,7 @@
     "manifest_version": 2,
     "background": {
         "scripts": [
+            "localStorage-proxy.js",
             "stackexchange-inbox-api.js",
             "stackexchange-inbox-api-chrome.js",
             "using-websocket.js"
@@ -22,6 +23,7 @@
     "permissions": [
         "https://api.stackexchange.com/2.1/inbox*",
         "notifications",
+        "storage",
         "tabs"
     ],
     "web_accessible_resources": [
