@@ -1,5 +1,5 @@
 /**
- * (c) 2013 Rob Wu <gwnRob@gmail.com> (https://robwu.nl)
+ * (c) 2013 - 2015 Rob Wu <rob@robwu.nl> (https://robwu.nl)
  *
  * Long-lived desktop notifications
  * Firefox 22+ implements notifications with XUL, but unfortunately these

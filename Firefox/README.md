@@ -3,7 +3,7 @@ Ported from a Chrome extension since version 1.5. The functionality is the same,
 Install it from https://addons.mozilla.org/en-US/firefox/addon/real-time-desktop-notificat/
 
 After installing the add-on, show the control panel by clicking  on the Stack Exchange icon at the
-[add-on bar](http://support.mozilla.org/en-US/kb/add-on-bar-quick-access-to-add-ons).
+[add-on bar](https://support.mozilla.org/en-US/kb/add-on-bar-quick-access-to-add-ons).
 If you don't see this bar, press `Ctrl` + `/` to show it.
 Click on the "Grant Token" buton to request an access token. After completing the Stack Exchange authentication,
 the add-on will autofill the User ID and start listening to inbox notifications.

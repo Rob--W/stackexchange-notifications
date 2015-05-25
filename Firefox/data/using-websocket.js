@@ -153,7 +153,7 @@ function getLink() {
     return localStorage.getItem('open-on-click');
 }
 function generateDefaultLink(uid) {
-    return 'http://stackexchange.com/users/' + (uid || getUserID()) + '/?tab=inbox';
+    return 'https://stackexchange.com/users/' + (uid || getUserID()) + '/?tab=inbox';
 }
 function setLink(link) {
     var previousLink = getLink();

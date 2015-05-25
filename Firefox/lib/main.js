@@ -1,6 +1,6 @@
 /**
  * This is the Firefox port of "Desktop Notifications for Stack Exchange"
- * StackApps listing: http://stackapps.com/q/3780/9699
+ * StackApps listing: https://stackapps.com/q/3780/9699
  * CWS: https://chrome.google.com/webstore/detail/desktop-notifications-for/ijglncoabcgieiokjmgdogpefdblmnle
  * 
  * In the Chrome extension, all significant logic happened in the background page.

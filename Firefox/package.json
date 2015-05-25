@@ -1,8 +1,8 @@
 {
     "name": "desktop-notifications-stack-exchange",
     "license": "MIT",
-    "author": "Rob W <gwnRob@gmail.com>",
-    "homepage": "http://stackapps.com/q/3780/9699",
+    "author": "Rob Wu <rob@robwu.nl>",
+    "homepage": "https://stackapps.com/q/3780/9699",
     "version": "1.6.6",
     "fullName": "Desktop notifications for Stack Exchange's inbox",
     "id": "stackexchange-notifications",
