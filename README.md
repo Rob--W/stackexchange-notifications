@@ -15,10 +15,15 @@ https://chrome.google.com/webstore/detail/desktop-notifications-for/ijglncoabcgi
 The extension has been ported to a Firefox add-on since version 1.5!  
 Install it from https://addons.mozilla.org/en-US/firefox/addon/real-time-desktop-notificat/
 
-The add-on can be configured by clicking on the StackExchange icon at the
+The add-on can be configured by clicking on the StackExchange icon in the main toolbar or in the
 [add-on bar](https://support.mozilla.org/en-US/kb/add-on-bar-quick-access-to-add-ons)
 (located at the bottom of Firefox's window).
-If you don't see this bar, press `Ctrl` + `/` to show it.
+
+The add-on is optimized for use with XUL notifications, and attempts to keep the
+notification around until the user (you) explicitly dismisses the notification.
+If your Firefox uses native notifications, but you prefer XUL notifications,
+install https://addons.mozilla.org/en-us/firefox/addon/no-native-notifications/
+to get XUL notifications instead of native notifications.
 
 ## License
 Copyright 2012 - 2015 Rob Wu <rob@robwu.nl>

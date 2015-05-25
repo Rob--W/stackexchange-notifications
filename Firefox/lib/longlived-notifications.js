@@ -12,6 +12,10 @@
  *
  * See alert.js, alert.xul and alert.css at
  * http://dxr.mozilla.org/mozilla-central/source/toolkit/components/alerts/resources/content/
+ *
+ * In recent versions of Firefox (e.g. FF 36+ on Linux), XUL notifications have been disabled
+ * in favor of native implementations. To re-enable XUL notifications, install the following
+ * addon: https://addons.mozilla.org/en-us/firefox/addon/no-native-notifications/
  */
 
 'use strict';
