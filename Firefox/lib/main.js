@@ -13,7 +13,7 @@
  */
 /* jshint moz:true */
 const { data } = require('sdk/self');
-const notifications = require('longlived-notifications');
+const notifications = require('./longlived-notifications');
 const windows = require('sdk/windows');
 const { browserWindows } = windows;
 const tabs = require('sdk/tabs');

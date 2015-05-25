@@ -5,6 +5,7 @@
     "homepage": "https://stackapps.com/q/3780/9699",
     "version": "1.6.6",
     "fullName": "Desktop notifications for Stack Exchange's inbox",
-    "id": "stackexchange-notifications",
+    "id": "stackexchange-notifications@jetpack",
+    "main": "lib/main",
     "description": "Shows desktop notifications for Stack Exchange's inbox in real-time."
 }
