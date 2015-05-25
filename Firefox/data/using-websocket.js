@@ -68,7 +68,7 @@ function startSocket() {
     var lastHeartbeat; // Used to check whether or not the connection died
     var socketWatcher; // Holds reference to setInterval
     
-    var method = uid + '-inbox';
+    var method = uid + '-topbar';
     var WebSocketConstructor = typeof WebSocket == 'undefined' ? MozWebSocket : WebSocket;
     ws = new WebSocketConstructor(SOCKET_URL);
     ws.onopen = function() {
@@ -101,7 +101,13 @@ function startSocket() {
             ws.send(message.data);
             lastHeartbeat = Date.now();
         }
-        if (message.action == method) setUnreadCount(message.data);
+        if (message.action == method) {
+            if (typeof message.data == 'string') {
+                // The data appears to be JSON-encoded twice. So unpack it again.
+                message.data = JSON.parse(message.data);
+            }
+            setUnreadCount(message.data.Inbox.UnreadInboxCount);
+        }
 
         eventEmitter.emit('socket', 'message');
     };
