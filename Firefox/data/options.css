@@ -19,6 +19,7 @@ h1 {
     border: 1px solid #759;
 }
 input {
+    font-size: 100%;
     margin: 3px 0 0 0;
 }
 
