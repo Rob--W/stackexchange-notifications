@@ -11,13 +11,14 @@
  * - The `eventEmitter` object is removed. All `eventEmitter` references were replaced by `self.port.emit('eventEmitter', ...)` / `self.port.on('eventEmitter', ...)`.
  * - When logic is migrated away from a function. it's put in main.js, and called isong an event emitter. The event's name is prefixed with the function's name, a colon, followed by a short description.
  */
-/* jshint moz:true */
+/* jshint moz:true, browser:false */
 const { data } = require('sdk/self');
 const notifications = require('./longlived-notifications');
 const windows = require('sdk/windows');
 const { browserWindows } = windows;
 const tabs = require('sdk/tabs');
 const sstorage = require('sdk/simple-storage').storage;
+const { setTimeout } = require('sdk/timers');
 
 // Some placeholder username.
 const DUMMY_AUTH_USERNAME = 'dummy_auth_username';
@@ -38,9 +39,17 @@ require('sdk/passwords').search({
 
 
 function onReady(token) {
+    const PANEL_WIDTH = 600;
+    const PANEL_HEIGHT = 300;
+    // If the user has already configured the addon:
+    // - Start small, to prevent the panel from being noticeable upon startup.
+    // - Don't attract focus to the panel to avoid interfering with user input.
+    // Otherwise (=new users), show the panel.
+    var hasSettings = Object.keys(sstorage.localStorageData).length > 0;
     optionsPanel = require('sdk/panel').Panel({
-        width: 600,
-        height: 300,
+        width: hasSettings ? 1 : PANEL_WIDTH,
+        height: hasSettings ? 1 : PANEL_HEIGHT,
+        focus: hasSettings ? false : true,
         contentURL: data.url('options.html'),
         contentScriptFile: data.url('bridge.js'),
         contentScriptWhen: 'start',
@@ -53,6 +62,19 @@ function onReady(token) {
     optionsPanel.port.on('localStorageChange', onStorageChange);
     // Handle page -> content script -> main.js message
     optionsPanel.port.on('options_message', onOptionsMessage);
+    if (hasSettings) {
+        // Hide the panel as soon as it is visible, and then set the usual dimensions.
+        optionsPanel.once('show', function() {
+            setTimeout(function() {
+                optionsPanel.hide();
+                setTimeout(function() {
+                    optionsPanel.width = PANEL_WIDTH;
+                    optionsPanel.height = PANEL_HEIGHT;
+                });
+            });
+        });
+    }
+    optionsPanel.show();
     // The panel associated with the widget is responsible for creating and maintaining a socket connection
     let options = {
         id: 'widget-desktop-notifications-se',
@@ -73,6 +95,7 @@ function onReady(token) {
     options.onChange = function(state) {
         if (state.checked) {
             optionsPanel.show({
+                focus: true,
                 position: button
             });
         }
@@ -99,7 +122,9 @@ function onOptionsMessage(message) {
     switch (message.method) {
         case 'showOptions':
             if (!optionsPanel.isShowing) {
-                optionsPanel.show();
+                optionsPanel.show({
+                    focus: true
+                });
             }
         break;
         case 'showNotification':
@@ -188,9 +213,11 @@ require('sdk/page-mod').PageMod({
             // message = {auth_token: string, account_id: string}
             optionsPanel.port.emit('to_options_message', message);
             // `worker.tab.on('close')` is unreliable, so use this instead..:
-            require('sdk/timers').setTimeout(function() {
+            setTimeout(function() {
                 if (!optionsPanel.isShowing) {
-                    optionsPanel.show();
+                    optionsPanel.show({
+                        focus: true
+                    });
                 }
             }, 300);
         });
