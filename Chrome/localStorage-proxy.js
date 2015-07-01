@@ -20,6 +20,7 @@
         // Migrate from previous version of the add-on, that used the real
         // localStorage object to persist preferences.
         var localStorageKeyCount = localStorage.length;
+        storage = {};
         for (var i = localStorageKeyCount; i > 0; --i) {
             var key = localStorage.key(0);
             if (!storage.hasOwnProperty(key)) {
@@ -27,7 +28,7 @@
             }
             localStorage.removeItem(key);
         }
-        if (localStorageKeyCount.length > 0) {
+        if (localStorageKeyCount > 0) {
             synchronize();
         }
     })();
