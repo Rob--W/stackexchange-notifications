@@ -159,7 +159,9 @@ function startSocket() {
                 // The data appears to be JSON-encoded twice. So unpack it again.
                 message.data = JSON.parse(message.data);
             }
-            setUnreadCount(message.data.Inbox.UnreadInboxCount);
+            if (message.data && message.data.Inbox) {
+                setUnreadCount(message.data.Inbox.UnreadInboxCount);
+            }
         }
 
         eventEmitter.emit('socket', 'message');
