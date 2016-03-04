@@ -11,7 +11,7 @@
  * - The `eventEmitter` object is removed. All `eventEmitter` references were replaced by `self.port.emit('eventEmitter', ...)` / `self.port.on('eventEmitter', ...)`.
  * - When logic is migrated away from a function. it's put in main.js, and called isong an event emitter. The event's name is prefixed with the function's name, a colon, followed by a short description.
  */
-/* jshint moz:true, browser:false */
+/* jshint browser:false */
 const { data } = require('sdk/self');
 const notifications = require('./longlived-notifications');
 const windows = require('sdk/windows');
@@ -137,7 +137,7 @@ function onOptionsMessage(message) {
                 data: message.data.link,
                 onClick: function(link) {
                     // Activate existing tab in active window
-                    for each (let tab in browserWindows.activeWindow.tabs) {
+                    for (let tab of browserWindows.activeWindow.tabs) {
                         if (matchesURL(tab.url)) {
                             console.log('Activating existing tab in active window');
                             tab.activate();
@@ -145,9 +145,10 @@ function onOptionsMessage(message) {
                             return;
                         }
                     }
+
                     // Active existing tab in any window
-                    for each (let window in browserWindows) {
-                        for each (let tab in window.tabs) {
+                    for (let window of browserWindows) {
+                        for (let tab of window.tabs) {
                             if (matchesURL(tab.url)) {
                                 console.log('Activating existing tab');
                                 tab.activate();
