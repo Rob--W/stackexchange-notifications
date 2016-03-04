@@ -46,6 +46,19 @@ new require('sdk/deprecated/window-utils').WindowTracker({
         // Pause the animation.
         // Note: This only works when alerts.disableSlidingEffect is NOT true.
         alertBox.style.animationPlayState = 'paused';
+        // As of Firefox 44, the notification is hidden by default and has a close animation,
+        // so we need to set the reset the animation, then unpause the animation on click.
+        // https://hg.mozilla.org/mozilla-central/rev/6ecebbea7718
+        alertBox.style.animationFillMode = 'none';
+        alertBox.style.animationName = 'dummy';
+        alertBox.addEventListener('click', function listener() {
+            alertBox.removeEventListener('click', listener);
+            alertBox.style.animationPlayState = '';
+            alertBox.style.animationFillMode = '';
+            if (alertBox.style.animationName === 'dummy') {
+                alertBox.style.animationName = '';
+            }
+        }, true);
         desktopNotifications.push(window);
     },
     onUntrack: function(window) {
