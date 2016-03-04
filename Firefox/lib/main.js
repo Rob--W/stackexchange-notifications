@@ -79,34 +79,23 @@ function onReady(token) {
     let options = {
         id: 'widget-desktop-notifications-se',
         label: 'Real-time desktop notifications for Stack Exchange\'s inbox',
+        icon: data.url('icon.png'),
     };
-    let ToggleButton;
-    try {
-        ToggleButton = require('sdk/ui/button/toggle').ToggleButton;
-    } catch (e) {}
-    if (!ToggleButton) { // backcompat with Firefox < 29
-        options.contentURL = data.url('icon.png');
-        options.panel = optionsPanel;
-        require('sdk/widget').Widget(options);
-        return;
-    }
-
-    options.icon = data.url('icon.png');
-    options.onChange = function(state) {
+    let button = require('sdk/ui/button/toggle').ToggleButton(options);
+    button.on('change', function(state) {
         if (state.checked) {
             optionsPanel.show({
                 focus: true,
                 position: button
             });
         }
-    };
+    });
 
     optionsPanel.on('hide', function() {
         button.state('window', {
             checked: false
         });
     });
-    var button = ToggleButton(options);
 }
 function onStorageChange(mutation) {
     if (mutation.type === 'setItem') {
