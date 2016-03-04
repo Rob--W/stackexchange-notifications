@@ -136,13 +136,16 @@ function onOptionsMessage(message) {
                 text: message.data.unreadCount + ' unread messages in your inbox',
                 data: message.data.link,
                 onClick: function(link) {
-                    // Activate existing tab in active window
-                    for (let tab of browserWindows.activeWindow.tabs) {
-                        if (matchesURL(tab.url)) {
-                            console.log('Activating existing tab in active window');
-                            tab.activate();
-                            browserWindows.activeWindow.activate();
-                            return;
+                    // activeWindow may be void if all windows except for the global console is closed.
+                    if (browserWindows.activeWindow) {
+                        // Activate existing tab in active window
+                        for (let tab of browserWindows.activeWindow.tabs) {
+                            if (matchesURL(tab.url)) {
+                                console.log('Activating existing tab in active window');
+                                tab.activate();
+                                browserWindows.activeWindow.activate();
+                                return;
+                            }
                         }
                     }
 
