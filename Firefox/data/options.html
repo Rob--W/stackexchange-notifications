@@ -8,6 +8,15 @@
 window.onerror = function(message, filename, lineno) {
     postMessage('#' + message + ' in ' + filename.split('/').pop() + ':' + lineno, '*');
 };
+function showNotificationForTesting() {
+    // These methods are defined in using-websocket.js
+    if (background.getUnreadCount()) {
+        background.showNotification();
+    } else {
+        // Some dummy value.
+        background.setUnreadCount(42);
+    }
+}
 </script>
 <script src="localStorage-proxy.js"></script>
 <script src="stackexchange-inbox-api.js"></script>
@@ -35,6 +44,7 @@ window.onerror = function(message, filename, lineno) {
     Socket status: <span id="status"></span>.<br>
     <input type="button" value="Start" id="socket-start" tabindex="8">
     <input type="button" value="Stop" id="socket-stop" tabindex="9">
+    <input type="button" value="Show test notification" onclick="showNotificationForTesting();">
 </div>
 <footer>
 Created by Rob Wu &lt;<a href="mailto:rob@robwu.nl" target="_blank">rob@robwu.nl</a>&gt;.<br>
