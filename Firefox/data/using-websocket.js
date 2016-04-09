@@ -189,6 +189,12 @@ function showNotification() {
         postMessage('{"method":"hideNotification"}', '*');
     }
 }
+function updateBageText() {
+    postMessage(JSON.stringify({
+        method: 'updateBageText',
+        text: String(getUnreadCount() || ''),
+    }), '*');
+}
 
 // When the UID changes, restart socket (socket will be closed if UID is empty)
 eventEmitter.on('change:uid', function(id) {
@@ -196,6 +202,7 @@ eventEmitter.on('change:uid', function(id) {
 });
 // When unread count is set, show a notification
 eventEmitter.on('change:unread', showNotification);
+eventEmitter.on('change:unread', updateBageText);
 StackExchangeInbox.on('change:unread', setUnreadCount);
 StackExchangeInbox.on('error', function(error_message) {
     console_log(error_message);

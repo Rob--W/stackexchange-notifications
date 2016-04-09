@@ -279,6 +279,17 @@ function showNotification() {
         _notification.show();
     }
 }
+function updateBageText() {
+    chrome.browserAction.setBadgeText({
+        text: String(getUnreadCount() || ''),
+    });
+}
+
+chrome.browserAction.onClicked.addListener(function() {
+    // Do the same as when a notification is clicked.
+    // This is just so that *something* happens when the button is clicked.
+    openTab(getLink() || generateDefaultLink());
+});
 
 // When the UID changes, restart socket (socket will be closed if UID is empty)
 eventEmitter.on('change:uid', function(id) {
@@ -286,6 +297,7 @@ eventEmitter.on('change:uid', function(id) {
 });
 // When unread count is set, show a notification
 eventEmitter.on('change:unread', showNotification);
+eventEmitter.on('change:unread', updateBageText);
 StackExchangeInbox.on('change:unread', setUnreadCount);
 StackExchangeInbox.on('error', function(error_message) {
     console.log(error_message);

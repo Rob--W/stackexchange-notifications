@@ -1,7 +1,7 @@
 {
     "name": "Desktop Notifications for Stack Exchange",
     "description": "Real-time desktop notifications for the Stack Exchange.",
-    "version": "1.6.8",
+    "version": "1.6.10",
     "manifest_version": 2,
     "background": {
         "scripts": [
@@ -20,6 +20,16 @@
     "optional_permissions": [
         "background"
     ],
+    "browser_action": {
+        "default_icon": {
+            "19": "icon19.png",
+            "38": "icon38.png"
+        }
+    },
+    "icons": {
+        "48": "icon48.png",
+        "128": "icon.png"
+    },
     "permissions": [
         "https://api.stackexchange.com/2.1/inbox*",
         "notifications",

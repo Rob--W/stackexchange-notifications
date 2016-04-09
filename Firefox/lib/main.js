@@ -26,6 +26,8 @@ const DUMMY_AUTH_USERNAME = 'dummy_auth_username';
 if (!sstorage.localStorageData) sstorage.localStorageData = {};
 
 var optionsPanel;
+let optionsButton; // "browser action"
+
 // Read the optional auth token from storage and launch the panel
 require('sdk/passwords').search({
     realm: 'stackexchange-notifications',
@@ -79,7 +81,10 @@ function onReady(token) {
     let options = {
         id: 'widget-desktop-notifications-se',
         label: 'Real-time desktop notifications for Stack Exchange\'s inbox',
-        icon: data.url('icon.png'),
+        icon: {
+            16: data.url('icon.png'),
+            32: data.url('icon32.png'),
+        },
     };
     let button = require('sdk/ui/button/toggle').ToggleButton(options);
     button.on('change', function(state) {
@@ -96,6 +101,9 @@ function onReady(token) {
             checked: false
         });
     });
+
+    // Set global variable so that the button badge text can be updated later.
+    optionsButton = button;
 }
 function onStorageChange(mutation) {
     if (mutation.type === 'setItem') {
@@ -115,6 +123,9 @@ function onOptionsMessage(message) {
                     focus: true
                 });
             }
+        break;
+        case 'updateBageText':
+            optionsButton.badge = message.text;
         break;
         case 'showNotification':
             var matchesURL = function(url) {
