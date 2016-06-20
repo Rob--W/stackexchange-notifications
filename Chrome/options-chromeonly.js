@@ -4,6 +4,7 @@ var bg = chrome.extension.getBackgroundPage();
 var incognito = document.getElementById('incognito');
 var autostart = document.getElementById('autostart');
 var run_in_bg = document.getElementById('run_in_bg');
+var persist_notification = document.getElementById('persist_notification');
 
 document.getElementById('default-link').textContent = bg.generateDefaultLink('<uid>');
 
@@ -33,6 +34,13 @@ run_in_bg.onchange = function() {
         chrome.permissions.remove(_chromePermissions, function(result) { setPermissionCheckbox(!result); });
     }
 };
+
+// Persist Chrome notifications?
+persist_notification.checked = !!localStorage.getItem('persist_notification');
+persist_notification.onchange = function() {
+    localStorage.setItem('persist_notification', this.checked ? '1' : '');
+};
+
 // Currently, there's only one optional permission. Don't check whether the added/removed permission is "background"
 chrome.permissions.onRemoved.addListener(function(permissions) {
     setPermissionCheckbox(false);

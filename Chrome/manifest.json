@@ -3,6 +3,7 @@
     "description": "Real-time desktop notifications for the Stack Exchange.",
     "version": "1.6.10",
     "manifest_version": 2,
+    "minimum_chrome_version": "50",
     "background": {
         "scripts": [
             "localStorage-proxy.js",
