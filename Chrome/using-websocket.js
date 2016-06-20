@@ -230,6 +230,7 @@ function getUnreadCount() {
 var _notification, _currentNotificationID;
 var CHROME_NOTIFICATION_ID = 'se-notifications';
 var chromeNotificationSupportsClick = true;
+var chromeNotificationSupportsPersistence = true;
 if (chrome.notifications) {
     chrome.notifications.onClicked.addListener(function(notificationId) {
         if (notificationId === CHROME_NOTIFICATION_ID) {
@@ -252,19 +253,28 @@ function showNotification() {
                 type: 'basic',
                 iconUrl: iconURL,
                 title: head,
-                message: body,
-                requireInteraction: persistNotification,
+                message: body
             };
             if (chromeNotificationSupportsClick) {
                 notificationOptions.isClickable = true;
             }
+            if (chromeNotificationSupportsPersistence) {
+                notificationOptions.requireInteraction = persistNotification;
+            }
             try {
                 chrome.notifications.create(CHROME_NOTIFICATION_ID, notificationOptions, function() {});
             } catch (e) {
-                delete notificationOptions.isClickable;
-                chromeNotificationSupportsClick = false;
-                // This feature was added in r229585 (http://crbug.com/304923)
-                chrome.notifications.create(CHROME_NOTIFICATION_ID, notificationOptions, function() {});
+                delete notificationOptions.requireInteraction;
+                chromeNotificationSupportsPersistence = false;
+                // This feature shipped in Chrome 50 (https://crbug.com/574763)
+                try {
+                    chrome.notifications.create(CHROME_NOTIFICATION_ID, notificationOptions, function() {});
+                } catch (e) {
+                    delete notificationOptions.isClickable;
+                    chromeNotificationSupportsClick = false;
+                    // This feature was added in r229585 (http://crbug.com/304923)
+                    chrome.notifications.create(CHROME_NOTIFICATION_ID, notificationOptions, function() {});
+                }
             }
             return;
         }
