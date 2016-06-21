@@ -241,7 +241,7 @@ if (chrome.notifications) {
 }
 function showNotification() {
     var notID = _currentNotificationID = new Date().getTime();
-    var persistNotification = !!localStorage.getItem('persist_notification');
+    var persistNotification = localStorage.getItem('persist_notification') !== '';
     if (_notification) _notification.cancel();
     else if (chrome.notifications) chrome.notifications.clear(CHROME_NOTIFICATION_ID, function() {});
     if (getUnreadCount() > 0) {
