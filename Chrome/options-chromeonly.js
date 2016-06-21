@@ -41,6 +41,14 @@ persist_notification.onchange = function() {
     localStorage.setItem('persist_notification', this.checked ? '1' : '');
 };
 
+// requireInteraction is supported since 50.0.2638.0, disable the checkbox if unsupported.
+try {
+    chrome.notifications.update('', {requireInteraction: false});
+} catch (e) {
+    persist_notification.disabled = true;
+    persist_notification.insertAdjacentText('afterend', ' [requires Chrome 50+]');
+}
+
 // Currently, there's only one optional permission. Don't check whether the added/removed permission is "background"
 chrome.permissions.onRemoved.addListener(function(permissions) {
     setPermissionCheckbox(false);
