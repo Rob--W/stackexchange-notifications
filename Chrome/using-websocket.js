@@ -242,12 +242,14 @@ if (chrome.notifications) {
     try {
         chrome.notifications.update('', {requireInteraction: false});
     } catch (e) {
+        // This feature shipped in Chrome 50.0.2638.0 (https://crbug.com/574763)
         chromeNotificationSupportsPersistence = false;
     }
 
     try {
         chrome.notifications.update('', {isClickable: false});
     } catch (e) {
+        // This feature was added in r229585 (http://crbug.com/304923)
         chromeNotificationSupportsClick = false;
     }
 }
