@@ -4,6 +4,7 @@ body, #uid, #link {
 body {
     padding: 0 1em;
     font-family: arial, sans-serif;
+    font-size: 100%;
 }
 h1 {
     margin: 0;
@@ -30,6 +31,11 @@ input ~ div {
 #uid:focus + #display-name + div, #uid:hover + #display-name + div, #uid + #display-name + div:hover,
 input:focus + div, input:hover + div, input + div:hover {
     visibility: visible;
+}
+
+.specific-settings label {
+    display: block;
+    margin: 0.3em 0;
 }
 
 /* Text input */
