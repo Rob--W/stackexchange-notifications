@@ -238,7 +238,22 @@ if (chrome.notifications) {
             chrome.notifications.clear(notificationId, function() {});
         }
     });
+
+    try {
+        chrome.notifications.update('', {requireInteraction: false}, function() {});
+    } catch (e) {
+        // This feature shipped in Chrome 50.0.2638.0 (https://crbug.com/574763)
+        chromeNotificationSupportsPersistence = false;
+    }
+
+    try {
+        chrome.notifications.update('', {isClickable: false}, function() {});
+    } catch (e) {
+        // This feature was added in 32.0.1676.0 (http://crbug.com/304923)
+        chromeNotificationSupportsClick = false;
+    }
 }
+
 function showNotification() {
     var notID = _currentNotificationID = new Date().getTime();
     var persistNotification = localStorage.getItem('persist_notification') !== '';
@@ -261,21 +276,7 @@ function showNotification() {
             if (chromeNotificationSupportsPersistence) {
                 notificationOptions.requireInteraction = persistNotification;
             }
-            try {
-                chrome.notifications.create(CHROME_NOTIFICATION_ID, notificationOptions, function() {});
-            } catch (e) {
-                delete notificationOptions.requireInteraction;
-                chromeNotificationSupportsPersistence = false;
-                // This feature shipped in Chrome 50 (https://crbug.com/574763)
-                try {
-                    chrome.notifications.create(CHROME_NOTIFICATION_ID, notificationOptions, function() {});
-                } catch (e) {
-                    delete notificationOptions.isClickable;
-                    chromeNotificationSupportsClick = false;
-                    // This feature was added in r229585 (http://crbug.com/304923)
-                    chrome.notifications.create(CHROME_NOTIFICATION_ID, notificationOptions, function() {});
-                }
-            }
+            chrome.notifications.create(CHROME_NOTIFICATION_ID, notificationOptions, function() {});
             return;
         }
         _notification = webkitNotifications.createNotification(iconURL, head, body);
