@@ -3,9 +3,12 @@
     "license": "MIT",
     "author": "Rob Wu <rob@robwu.nl>",
     "homepage": "https://stackapps.com/q/3780/9699",
-    "version": "1.6.10",
+    "version": "1.6.11",
     "fullName": "Desktop notifications for Stack Exchange's inbox",
     "id": "stackexchange-notifications@jetpack",
     "main": "lib/main",
+    "permissions": {
+        "multiprocess": true
+    },
     "description": "Shows desktop notifications for Stack Exchange's inbox in real-time."
 }
