@@ -12,6 +12,7 @@ var socketStart = document.getElementById('socket-start');
 var socketStop = document.getElementById('socket-stop');
 
 var autostart = document.getElementById('autostart');
+var use_desktop_notifications = document.getElementById('use_desktop_notifications');
 
 uid.defaultValue = uid.value = bg.getUserID() || '';
 link.defaultValue = link.value = bg.getLink();
@@ -27,6 +28,12 @@ autostart.checked = localStorage.getItem('autostart') != '0';
 autostart.onchange = function() {
     localStorage.setItem('autostart', this.checked ? '1' : '0');
 };
+
+use_desktop_notifications.checked = localStorage.getItem('use_desktop_notifications') != '0';
+use_desktop_notifications.onchange = function() {
+    localStorage.setItem('use_desktop_notifications', this.checked ? '1' : '0');
+};
+
 
 function updateSaveButtonState() {
     // Disable Save if the fields are not changed and/or invalid

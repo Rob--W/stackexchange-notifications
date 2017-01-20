@@ -309,7 +309,9 @@ eventEmitter.on('change:uid', function(id) {
     if (localStorage.getItem('autostart') != '0') startSocket();
 });
 // When unread count is set, show a notification
-eventEmitter.on('change:unread', showNotification);
+eventEmitter.on('change:unread', function() {
+    if (localStorage.getItem('use_desktop_notifications') != '0') showNotification();
+});
 eventEmitter.on('change:unread', updateBageText);
 StackExchangeInbox.on('change:unread', setUnreadCount);
 StackExchangeInbox.on('error', function(error_message) {
