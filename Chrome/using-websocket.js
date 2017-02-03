@@ -92,11 +92,12 @@ function resetAttempts() {
 
 var ws;
 var socket_keep_alive = false;
+var delayedSocketStarter;  // Timer to start the socket
 // Refresh socket when we're online again, to make sure that the backend sends messages to us
 addEventListener('online', function() {
     if (socket_keep_alive) {
         console.log('Refreshing connection after receiving "online" event.');
-        stopSocket(); // Will automatically reconnect because socket_keep_alive is true;
+        restartSocket();
     }
 });
 function startSocket() {
@@ -120,7 +121,6 @@ function startSocket() {
     // Socket, don't die!
     socket_keep_alive = true;
     var lastHeartbeat; // Used to check whether or not the connection died
-    var socketWatcher; // Holds reference to setInterval
 
     var method = uid + '-topbar';
     ws = new WebSocket(SOCKET_URL);
@@ -134,15 +134,12 @@ function startSocket() {
         
         // Watch connectivity
         lastHeartbeat = Date.now();
-        socketWatcher = setInterval(function() {
+        this._socketWatcher = setInterval(function() {
             var diff = Math.round((Date.now() - lastHeartbeat) / 60 / 1000);
             if (diff > 6) {
                 console.log('Last heartbeat was ' + diff + ' seconds ago. Resetting socket...');
                 // Reset socket when the socket died (heartbeat should occur every 5 minutes)
-                stopSocket();
-                // stopSocket -> onclose -> clearInterval(socketWatcher)
-                // After stopping, the socket will automatically be recreated because
-                // `socket_keep_alive` is still true
+                restartSocket();
             }
         }, 5000); // Small delay, because getting a timestamp and calculating the diff is inexpensive
 
@@ -168,15 +165,11 @@ function startSocket() {
     };
     ws.onclose = function() {
         console.log('Closed WebSocket');
-        ws = null;
-        clearInterval(socketWatcher);
-        if (socket_keep_alive) setTimeout(startSocket, getReconnectDelay());
-
-        eventEmitter.emit('socket', 'close');
+        restartSocket();
     };
     ws.onerror = function() {
         console.log('WebSocket failed');
-        ws = null;
+        restartSocket();
     };
 }
 function getSocketStatus() {
@@ -184,10 +177,26 @@ function getSocketStatus() {
 }
 function stopSocket(explicitStop) {
     if (explicitStop) socket_keep_alive = false;
-    if (ws) try {
-        console.log('Closing (existing) WebSocket');
-        ws.close();
+    clearTimeout(delayedSocketStarter);
+    if (!ws) {
+        return;
+    }
+    try {
+        ws.onopen = ws.onmessage = ws.onclose = ws.onerror = null;
+        clearInterval(ws._socketWatcher);
+        if (ws.readyState !== 2 && ws.readyState !== 3) { // Not closed yet.
+            console.log('Closing (existing) WebSocket');
+            ws.close();
+        }
     } catch(e) {}
+    ws = null;
+    eventEmitter.emit('socket', 'close');
+}
+
+function restartSocket() {
+    if (!socket_keep_alive) return;
+    stopSocket(); // Will automatically reconnect because socket_keep_alive is true;
+    delayedSocketStarter = setTimeout(startSocket, getReconnectDelay());
 }
 
 // Stack Exchange User ID
