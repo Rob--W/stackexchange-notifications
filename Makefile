@@ -40,4 +40,5 @@ icons-firefox:
 icons: icons-chrome icons-firefox
 
 clean:
-	rm extension.zip
+	rm -f extension.zip
+	rm -f se-notifications.xpi
