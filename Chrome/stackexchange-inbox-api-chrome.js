@@ -2,7 +2,6 @@
 StackExchangeInbox.auth.requestToken = function() {
     chrome.windows.create({
         url: StackExchangeInbox.auth.API_AUTH_URL,
-        focused: true,
         type: 'popup',
         top: 0,
         left: Math.max(0, Math.round((screen.availWidth - 660) / 2)),
