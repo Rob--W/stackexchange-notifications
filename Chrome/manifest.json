@@ -1,6 +1,7 @@
 {
     "name": "Desktop Notifications for Stack Exchange",
     "description": "Real-time desktop notifications for the Stack Exchange.",
+    "homepage_url": "https://stackapps.com/q/3780/9699",
     "version": "1.6.12",
     "manifest_version": 2,
     "background": {

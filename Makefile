@@ -9,8 +9,17 @@ endef
 chrome:
 	cd Chrome && 7z u -tzip ../extension.zip *
 
+# After copying the source from Chrome,
+# remove unsupported keys (optional_permissions background),
+# and add applications.gecko.id.
 firefox:
-	cd Firefox && jpm xpi
+	rsync -av Chrome/ Firefox/ --delete --exclude='.*'
+	cat Chrome/manifest.json | \
+		tr '\n' '\t' | \
+		sed 's/"optional_permissions":[^]]\+][^"]\+//' | \
+		sed 's/\]\t\}/],\t    "applications": {\t        "gecko": {\t            "id": "stackexchange-notifications@jetpack"\t        }\t    }\t}/' | \
+		tr '\t' '\n' > Firefox/manifest.json
+	cd Firefox && 7z u -tzip ../se-notifications.xpi
 
 icons-chrome:
 	$(call mkicon,Chrome/,19)
