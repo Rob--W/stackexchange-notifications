@@ -46,7 +46,6 @@ function openTab(url) {
     });
     function createWindow() {
         chrome.windows.create({
-            focused: true,
             incognito: incognitoPreference,
             url: url
         });
