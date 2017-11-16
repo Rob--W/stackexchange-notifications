@@ -26,7 +26,12 @@ var _chromePermissions = {
 function setPermissionCheckbox(state) {
     run_in_bg.checked = state;
 }
-chrome.permissions.contains(_chromePermissions, setPermissionCheckbox);
+try {
+    chrome.permissions.contains(_chromePermissions, setPermissionCheckbox);
+} catch (e) {
+    // Firefox does not support "background" permission.
+    run_in_bg.remove();
+}
 run_in_bg.onchange = function() {
     if (this.checked) {
         chrome.permissions.request(_chromePermissions, setPermissionCheckbox);
@@ -48,6 +53,8 @@ try {
     persist_notification.disabled = true;
     persist_notification.insertAdjacentText('afterend', ' [requires Chrome 50+]');
 }
+
+if (!chrome.permissions.onRemoved) return; // Not supported by Firefox.
 
 // Currently, there's only one optional permission. Don't check whether the added/removed permission is "background"
 chrome.permissions.onRemoved.addListener(function(permissions) {
