@@ -30,7 +30,7 @@ try {
     chrome.permissions.contains(_chromePermissions, setPermissionCheckbox);
 } catch (e) {
     // Firefox does not support "background" permission.
-    run_in_bg.remove();
+    run_in_bg.parentNode.remove();
 }
 run_in_bg.onchange = function() {
     if (this.checked) {
