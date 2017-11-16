@@ -58,7 +58,7 @@ try {
     }
 }
 
-if (!chrome.permissions.onRemoved) return; // Not supported by Firefox.
+if (!chrome.permissions || !chrome.permissions.onRemoved) return; // Not supported by Firefox.
 
 // Currently, there's only one optional permission. Don't check whether the added/removed permission is "background"
 chrome.permissions.onRemoved.addListener(function(permissions) {
