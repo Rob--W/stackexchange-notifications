@@ -128,7 +128,17 @@ function startSocket() {
             url: chrome.runtime.getURL('options.html'),
             active: true
         }, function(tabs) {
-            if (!tabs.length && confirm('No user ID found. Want to configure Desktop Notifications for the Stack Exchange?')) {
+            if (tabs.length) return;
+            if (chrome.notifications) {
+                chrome.notifications.create('CONFIG_PROMPT', {
+                    type: 'basic',
+                    iconUrl: chrome.runtime.getURL('icon.png'),
+                    title: 'Configuration required for Stack Exchange notifications',
+                    message: 'No user ID found. Click here to configure Desktop Notifications for Stack Exchange.'
+                });
+                return;
+            }
+            if (confirm('No user ID found. Want to configure Desktop Notifications for the Stack Exchange?')) {
                 ensureOneOptionsPage();
             }
         });
@@ -261,6 +271,10 @@ if (chrome.notifications) {
     chrome.notifications.onClicked.addListener(function(notificationId) {
         if (notificationId === CHROME_NOTIFICATION_ID) {
             openTab(getLink() || generateDefaultLink());
+            chrome.notifications.clear(notificationId, function() {});
+        }
+        if (notificationId === 'CONFIG_PROMPT') {
+            ensureOneOptionsPage();
             chrome.notifications.clear(notificationId, function() {});
         }
     });
