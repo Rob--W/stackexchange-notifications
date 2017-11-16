@@ -52,6 +52,10 @@ try {
 } catch (e) {
     persist_notification.disabled = true;
     persist_notification.insertAdjacentText('afterend', ' [requires Chrome 50+]');
+    if (typeof browser === 'object') {
+        // Firefox does not support requireInteraction - https://bugzil.la/1417848
+        persist_notification.parentNode.remove();
+    }
 }
 
 if (!chrome.permissions.onRemoved) return; // Not supported by Firefox.
