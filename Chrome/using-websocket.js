@@ -66,10 +66,27 @@ function openTab(url) {
 // Open options page, make sure that only one is opened
 function ensureOneOptionsPage() {
     var options_url = chrome.runtime.getURL('options.html');
+    if (chrome.runtime.openOptionsPage) {
+        var views = chrome.extension.getViews() || [];
+        if (views.some(function(view) {
+            try {
+                return view.location.href.startsWith(options_url);
+            } catch (e) {
+                return false;
+            }
+        })) {
+            chrome.runtime.openOptionsPage();
+            return;
+        }
+    }
     chrome.tabs.query({
         url: options_url
     }, function(tabs) {
         if (tabs.length == 0) {
+            if (chrome.runtime.openOptionsPage) {
+                chrome.runtime.openOptionsPage();
+                return;
+            }
             openTab(options_url);
         } else {
             // If there's more than one, close all but the first

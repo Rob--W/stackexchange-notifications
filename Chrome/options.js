@@ -3,7 +3,6 @@
 window.addEventListener('HackyLocalStorageReady', function() {
 var bg = chrome.extension.getBackgroundPage();
 
-bg.ensureOneOptionsPage();
 var uid = document.getElementById('uid');
 var link = document.getElementById('link');
 var tokenButton = document.getElementById('grant-token');

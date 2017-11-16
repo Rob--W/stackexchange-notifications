@@ -16,7 +16,9 @@
         "run_at": "document_end",
         "js": ["login_success.js"]
     }],
-    "options_page": "options.html",
+    "options_ui": {
+        "page": "options.html"
+    },
     "optional_permissions": [
         "background"
     ],
