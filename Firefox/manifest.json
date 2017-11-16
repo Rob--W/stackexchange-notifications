@@ -6,6 +6,7 @@
     "manifest_version": 2,
     "background": {
         "scripts": [
+            "storage-sync-polyfill.js",
             "localStorage-proxy.js",
             "stackexchange-inbox-api.js",
             "stackexchange-inbox-api-chrome.js",

@@ -13,12 +13,18 @@ chrome:
 # remove unsupported keys (optional_permissions background),
 # and add applications.gecko.id.
 firefox:
-	rsync -av Chrome/ Firefox/ --delete --exclude='.*'
+	rsync -av Chrome/ Firefox/ --delete --exclude='.*' \
+		--exclude=storage-sync-polyfill.js
 	cat Chrome/manifest.json | \
 		tr '\n' '\t' | \
+		sed 's/"localStorage-proxy.js"/"storage-sync-polyfill.js",\t            \0/' | \
 		sed 's/"optional_permissions":[^]]\+][^"]\+//' | \
 		sed 's/\]\t\}/],\t    "applications": {\t        "gecko": {\t            "id": "stackexchange-notifications@jetpack"\t        }\t    }\t}/' | \
 		tr '\t' '\n' > Firefox/manifest.json
+	cat Chrome/options.html | \
+		tr '\n' '\t' | \
+		sed 's/<script src="localStorage-proxy.js">/<script src="storage-sync-polyfill.js"><\/script>\t\0/' | \
+		tr '\t' '\n' > Firefox/options.html
 	cd Firefox && 7z u -tzip ../se-notifications.xpi
 
 icons-chrome:

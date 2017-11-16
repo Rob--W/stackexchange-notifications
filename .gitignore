@@ -1,2 +1,3 @@
 Firefox/*
 !Firefox/manifest.json
+!Firefox/storage-sync-polyfill.js
