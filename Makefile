@@ -14,6 +14,7 @@ chrome:
 # and add applications.gecko.id.
 firefox:
 	rsync -av Chrome/ Firefox/ --delete --exclude='.*' \
+		--exclude=README.md \
 		--exclude=storage-sync-polyfill.js
 	cat Chrome/manifest.json | \
 		tr '\n' '\t' | \
