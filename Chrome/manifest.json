@@ -2,7 +2,7 @@
     "name": "Desktop Notifications for Stack Exchange",
     "description": "Real-time desktop notifications for the Stack Exchange.",
     "homepage_url": "https://stackapps.com/q/3780/9699",
-    "version": "2.0",
+    "version": "2.1",
     "manifest_version": 2,
     "background": {
         "scripts": [
