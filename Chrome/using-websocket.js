@@ -129,7 +129,7 @@ function startSocket() {
         }, function(tabs) {
             if (tabs.length) return;
             if (chrome.notifications) {
-                chrome.notifications.create('CONFIG_PROMPT', {
+                chromeNotificationsCreate(CONFIG_NOTIFICATION_ID, {
                     type: 'basic',
                     iconUrl: chrome.runtime.getURL('icon.png'),
                     title: 'Configuration required for Stack Exchange notifications',
@@ -264,6 +264,7 @@ function getUnreadCount() {
 // Notification
 var _notification, _currentNotificationID;
 var CHROME_NOTIFICATION_ID = 'se-notifications';
+var CONFIG_NOTIFICATION_ID = 'CONFIG_PROMPT';
 var chromeNotificationSupportsClick = true;
 var chromeNotificationSupportsPersistence = true;
 if (chrome.notifications) {
@@ -272,7 +273,7 @@ if (chrome.notifications) {
             openTab(getLink() || generateDefaultLink());
             chrome.notifications.clear(notificationId, function() {});
         }
-        if (notificationId === 'CONFIG_PROMPT') {
+        if (notificationId === CONFIG_NOTIFICATION_ID) {
             ensureOneOptionsPage();
             chrome.notifications.clear(notificationId, function() {});
         }
@@ -293,9 +294,18 @@ if (chrome.notifications) {
     }
 }
 
+function chromeNotificationsCreate(notificationId, notificationOptions) {
+    if (chromeNotificationSupportsClick) {
+        notificationOptions.isClickable = true;
+    }
+    if (chromeNotificationSupportsPersistence) {
+        notificationOptions.requireInteraction = localStorage.getItem('persist_notification') !== '';
+    }
+    chrome.notifications.create(notificationId, notificationOptions, function() {});
+}
+
 function showNotification() {
     var notID = _currentNotificationID = new Date().getTime();
-    var persistNotification = localStorage.getItem('persist_notification') !== '';
     if (_notification) _notification.cancel();
     else if (chrome.notifications) chrome.notifications.clear(CHROME_NOTIFICATION_ID, function() {});
     if (getUnreadCount() > 0) {
@@ -309,13 +319,7 @@ function showNotification() {
                 title: head,
                 message: body
             };
-            if (chromeNotificationSupportsClick) {
-                notificationOptions.isClickable = true;
-            }
-            if (chromeNotificationSupportsPersistence) {
-                notificationOptions.requireInteraction = persistNotification;
-            }
-            chrome.notifications.create(CHROME_NOTIFICATION_ID, notificationOptions, function() {});
+            chromeNotificationsCreate(CHROME_NOTIFICATION_ID, notificationOptions);
             return;
         }
         _notification = webkitNotifications.createNotification(iconURL, head, body);
