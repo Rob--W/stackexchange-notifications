@@ -1,6 +1,10 @@
 // This file is identical for Chrome and Firefox, except for the following line
 // and the end of this file
-window.addEventListener('HackyLocalStorageReady', function() {
+window.localStoragePromise.then(function() {
+    // When an extension is enabled from about:addons in Firefox,
+    // the options page is initialized before the background page.
+    return chrome.extension.getBackgroundPage().localStoragePromise;
+}).then(function() {
 var bg = chrome.extension.getBackgroundPage();
 
 var uid = document.getElementById('uid');
@@ -265,4 +269,4 @@ addEventListener('unload', function() {
 // (this inserts the name corresponding to the user id after the #uid field))
 uidToName(bg.getUserID());
 
-}); // End of addEventListener('HackyLocalStorageReady'
+});

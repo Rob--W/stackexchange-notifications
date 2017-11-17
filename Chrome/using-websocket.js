@@ -360,7 +360,7 @@ StackExchangeInbox.on('found:account_id', function(account_id) {
     setUserID(account_id);
 });
 
-window.addEventListener('HackyLocalStorageReady', function() {
+window.localStoragePromise.then(function() {
     // Start socket with default settings if possible
     if (localStorage.getItem('autostart') != '0') startSocket();
-}); // End of addEventListener('HackyLocalStorageReady'
+});

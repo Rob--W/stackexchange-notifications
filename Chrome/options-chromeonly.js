@@ -1,4 +1,8 @@
-window.addEventListener('HackyLocalStorageReady', function() {
+window.localStoragePromise.then(function() {
+    // When an extension is enabled from about:addons in Firefox,
+    // the options page is initialized before the background page.
+    return chrome.extension.getBackgroundPage().localStoragePromise;
+}).then(function() {
 
 var bg = chrome.extension.getBackgroundPage();
 var incognito = document.getElementById('incognito');
@@ -68,4 +72,4 @@ chrome.permissions.onAdded.addListener(function(permissions) {
     setPermissionCheckbox(true);
 });
 
-}); // End of addEventListener('HackyLocalStorageReady'
+});

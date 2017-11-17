@@ -7,7 +7,7 @@
  * chrome.storage.sync without having to restructure the code that uses
  * the synchronous localStorage.
  *
- * The global "HackyLocalStorageReady" event is dispatched when the fake
+ * The global window.localStoragePromise promise is resolved when the fake
  * localStorage is available (typically within a few milliseconds).
  * If you use localStorage BEFORE it is ready, then a TypeError will be thrown.
  */
@@ -55,12 +55,15 @@
             localStorageData: storage
         });
     }
-    chrome.storage.sync.get({
-        localStorageData: {}
-    }, function(items) {
-        storage = items.localStorageData || {};
-        // Notify users that the storage is ready.
-        window.dispatchEvent(new CustomEvent('HackyLocalStorageReady'));
+
+    window.localStoragePromise = new Promise(function(resolve) {
+        chrome.storage.sync.get({
+            localStorageData: {}
+        }, function(items) {
+            storage = items.localStorageData || {};
+            // Notify users that the storage is ready.
+            resolve();
+        });
     });
 
     chrome.storage.onChanged.addListener(function(changes) {
