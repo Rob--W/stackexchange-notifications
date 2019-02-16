@@ -341,12 +341,6 @@ function updateBageText() {
     });
 }
 
-chrome.browserAction.onClicked.addListener(function() {
-    // Do the same as when a notification is clicked.
-    // This is just so that *something* happens when the button is clicked.
-    openTab(getLink() || generateDefaultLink());
-});
-
 // When the UID changes, restart socket (socket will be closed if UID is empty)
 eventEmitter.on('change:uid', function(id) {
     if (localStorage.getItem('autostart') != '0') startSocket();

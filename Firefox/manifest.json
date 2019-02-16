@@ -22,6 +22,7 @@
         "page": "options.html"
     },
     "browser_action": {
+        "default_popup": "inbox.html",
         "default_icon": {
             "19": "icon19.png",
             "38": "icon38.png"
@@ -32,7 +33,7 @@
         "128": "icon.png"
     },
     "permissions": [
-        "https://api.stackexchange.com/*",
+        "https://api.stackexchange.com/2.1/inbox*",
         "notifications",
         "storage",
         "tabs"

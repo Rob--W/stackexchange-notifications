@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>SE Notification settings</title>
+<base target="_blank">
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body { /* role of topbar-dialog, dimensions only */
+    margin: 0;
+    padding: 0;
+    width: 375px;
+    max-height: 505px;
+    line-height: 1.4;
+}
+
+body { /* role of topbar-dialog */
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    color: #2f3337;
+    background-color: #FFF;
+    font-size: 12px;
+    text-align: left;
+    border: 1px solid #e4e6e8;
+    border-top: none;
+    box-shadow: 0 2px 2px rgba(12,13,14,0.2);
+}
+
+.header {
+    background-color: #eff0f1;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+}
+h3 {
+    color: #6a737c;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
+    margin: 0;
+}
+.header a {
+    color: #07C;
+    text-decoration: none;
+}
+
+.modal-content {
+    min-height: 390px;
+    max-height: 390px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    padding: 10px 7px;
+    margin: 1px 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+.inbox-item {
+    border-bottom: 1px solid #eff0f1;
+    list-style: none;
+    margin-left: 0;
+    line-height: 1.3;
+}
+.inbox-item:last-child {
+    border-bottom: none;
+}
+.inbox-item:hover {
+    background-color: #f7f8f8;
+}
+.unread-item {
+    background-color: #F0FBFF;
+}
+.inbox-error {
+    background-color: #FDD;
+    font-weight: bold;
+    padding-left: 4px;
+}
+.inbox-error:hover {
+    background-color: #FEE;
+}
+
+.inbox-item > * {
+    padding: 7px 3px;
+}
+
+.inbox-item a {
+    color: #0077cc;
+    text-decoration: none;
+}
+.inbox-item a:hover {
+    color: #015490;
+}
+
+.item-link {
+    display: flex;
+    margin: 0 -4px;
+}
+.site-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    vertical-align: top;
+    flex: none;
+    margin: 0 4px;
+}
+.item-content {
+    flex: 1 auto;
+    margin: 0 4px;
+}
+.item-header {
+    color: #848d95;
+}
+.item-creation {
+    float: right;
+}
+.item-location {
+    margin: 4px 0;
+}
+.item-summary {
+    color: #2f3337;
+}
+.all-items-bottom-link {
+    display: block;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="header">
+    <h3>Inbox</h3>
+    <a id="mark-as-read" href="#mark-as-read" hidden>mark as read</a>
+    <a class="all-items-link" href="">all items</a>
+</div>
+<div class="modal-content">
+    <ul>
+        <li class="inbox-item" hidden><a class="all-items-bottom-link" href="">see all inbox items</a></li>
+    </ul>
+    <div hidden id="tokenNote">
+        To see inbox messages here, you need to grant an access token to this extension at the <a href="options.html">options page</a>.
+    </div>
+</div>
+
+<!-- Template based on https://stackexchange.com/topbar/inbox (for logged in users) -->
+<template id="inboxItemTemplate">
+    <li class="inbox-item">
+        <a class="item-link">
+            <div class="site-icon"></div>
+            <div class="item-content">
+                <div class="item-header">
+                    <span class="item-type"></span>
+                    <span class="item-creation" title=""></span>
+                </div>
+                <div class="item-location"></div>
+                <div class="item-summary"></div>
+            </div>
+        </a>
+    </li>
+</template>
+
+<script src="inbox.js"></script>
+</body>
+</html>

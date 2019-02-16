@@ -35,6 +35,19 @@
     var API_MINIMUM_PAGESIZE = 40;
     var API_MAXIMUM_PAGESIZE = 100;
 
+    // basic = body + creation_date + is_unread + item_type + link + site + title + site.favicon_url + site.name (+unsafe filter)
+    // https://api.stackexchange.com/docs/inbox#filter=)-wpJO8qkn.bBXNMrk*hhvIVGJM
+    var API_CONTENT_FILTERS = [
+        ')-wpJO8qkn.bBXNMrk*hhvIVGJM',  // basic
+        '00A4G31njJrnVua5SFynYaYA',     // basic + question_id
+        ')-wpJO8qkn.bBXNsIUQRs0MFdgr',  // basic + comment_id
+        ')-wpJO8qkn.bBXNMSIc*YZ9p2Lj',  // basic + answer_id
+        '00A4G31njJrnVV8jm5besN_Y',     // basic + question_id + answer_id
+        '00A4G31njJro)LKYBQ3rIyvf ',    // basic + question_id + comment_id
+        '00A4G31njJrsptLF7H_G9SEf',     // basic + comment_id + answer_id
+        ')IfYcugX7YVvCSCm6_PswS2',      // basic + question_id + comment_id + answer_id
+    ];
+
     /////////////////////
     // API Definition  //
     /////////////////////
@@ -52,6 +65,8 @@
             API_AUTH_URL: API_AUTH_URL
         },
         fetchUnreadCount: fetchUnreadCount,  // void fetchUnreadCount( function callback(unreadCount) )
+        getUnreadInboxApiUrl: getUnreadInboxApiUrl, // string getUnreadInboxApiUrl()
+        markAsRead: markAsRead, // void markAsRead( function(isSuccess) )
         // Very simple event emitter
         _callbacks: {},
         emit: function(method, data) {
@@ -111,11 +126,30 @@
         return url;
     }
 
+    var _api_content_filter = 0;
+    function getUnreadInboxApiUrl() {
+        if (!StackExchangeInbox.auth.getToken()) {
+            return '';
+        }
+        // Let's keep this simple, without paging.
+        var url = 'https://api.stackexchange.com/2.1/inbox';
+        url += '?key=' + API_KEY;
+        url += '&access_token=' + StackExchangeInbox.auth.getToken();
+        url += '&filter=' + API_CONTENT_FILTERS[_api_content_filter];
+        url += '&pagesize=32';
+
+        _api_content_filter = (_api_content_filter + 1) % API_CONTENT_FILTERS.length;
+
+        return url;
+    }
+
     // Get inbox entries
-    function fetchUnreadCount() {
+    function fetchUnreadCount(callback) {
+        callback = callback || function(unreadCount) {};
         if (!StackExchangeInbox.auth.getToken()) {
             // No token? No request!
             StackExchangeInbox.emit('error', 'No access token found, cannot connect to StackExchange API');
+            callback(-1);
             return;
         }
         var url = generateStackExchangeAPIURL();
@@ -129,17 +163,33 @@
                     // Token is invalid, Discard it
                     StackExchangeInbox.auth.setToken('');
                 }
+                callback(-1);
                 return;
             }
             var unreadCount = data.items.reduce(function(unreadCount, item) {
                 return unreadCount += item.is_unread ? 1 : 0;
             }, 0);
             StackExchangeInbox.emit('change:unread', unreadCount);
+            callback(unreadCount);
         };
         x.onerror = function() {
             StackExchangeInbox.emit('error', 'Failed to get unread count:  ' + x.status + ' ' + x.statusText);
+            callback(-1);
         };
         x.send();
     }
+
+    function markAsRead(callback) {
+        var loader = new Image();
+        loader.onload = loader.onerror = function() {
+            loader.onload = loader.onerror = null;
+            fetchUnreadCount(function(unreadCount) {
+                // successfully marked as unread if the count is 0.
+                callback(unreadCount === 0);
+            });
+        };
+        loader.src = 'https://stackexchange.com/topbar/inbox?_=' + Date.now();
+    }
+
     exports.StackExchangeInbox = StackExchangeInbox;
 })(typeof exports == 'undefined' ? this : exports);

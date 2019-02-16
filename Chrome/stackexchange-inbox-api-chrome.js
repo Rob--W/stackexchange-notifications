@@ -21,7 +21,18 @@ StackExchangeInbox.auth.setToken = function setToken(token) {
     StackExchangeInbox.emit('change:token', token);
 };
 // Handle successful authentication
-chrome.runtime.onMessage.addListener(function(message, sender) {
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+    if (message === 'getUnreadInboxApiUrl') {
+        sendResponse({
+            apiUrl: StackExchangeInbox.getUnreadInboxApiUrl(),
+            inboxLink: generateDefaultLink(),
+        });
+        return;
+    }
+    if (message === 'markAsRead') {
+        StackExchangeInbox.markAsRead(sendResponse);
+        return true;
+    }
     if ('auth_token' in message) {
         if (message.auth_token) {
             StackExchangeInbox.auth.setToken(message.auth_token);

@@ -6,8 +6,13 @@ button. Upon click, a Stack Exchange authentication dialog will open. Grant
 the token, and the extension will autofill the user ID. Then, you will
 immediately get notified of the unread message count in your inbox.
 
+The unread message count is also displayed on the extension button, and
+clicking on the extension button will directly show the contents of your inbox
+in a panel. There is a "mark as read" button to mark all messages as read.
+
 (Alternatively, you can manually set the user ID, but then the extension will
-not be able to count the number of unread messages.)
+not be able to count the number of unread messages, and not be able to show the
+inbox content either.)
 
 https://chrome.google.com/webstore/detail/desktop-notifications-for/ijglncoabcgieiokjmgdogpefdblmnle
 
