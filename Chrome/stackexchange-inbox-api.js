@@ -4,10 +4,12 @@
     var API_CLIENT_ID = '903';
     
     // URLs for getting API token. Sufficed URL with "robw" to create a semi-unique URL to avoid conflicts with others
-    var _api_auth_redirect_url = 'https://stackexchange.com/oauth/login_success?robw&protocol=https&';
+    // See also https://stackapps.com/questions/8233/oauth-redirect-uri-to-https-stackexchange-com-oauth-login-successxxx-strips-p
+    var _api_auth_redirect_url = 'https://stackexchange.com/oauth/login_success';
     var API_AUTH_URL = 'https://stackexchange.com/oauth/dialog?' +
                     'client_id=' + API_CLIENT_ID +
                     '&scope=no_expiry,read_inbox' +
+                    '&state=robw' +
                     '&redirect_uri=' + encodeURIComponent(_api_auth_redirect_url);
 
                     // Multiple API filters to bypass the cache

@@ -13,7 +13,7 @@
         ]
     },
     "content_scripts": [{
-        "matches": ["https://stackexchange.com/oauth/login_success?robw&*"],
+        "matches": ["https://stackexchange.com/oauth/login_success*"],
         "run_at": "document_end",
         "js": ["login_success.js"]
     }],
