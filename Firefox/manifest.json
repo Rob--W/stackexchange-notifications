@@ -10,7 +10,8 @@
             "localStorage-proxy.js",
             "stackexchange-inbox-api.js",
             "stackexchange-inbox-api-chrome.js",
-            "using-websocket.js"
+            "using-websocket.js",
+            "bridge.js"
         ]
     },
     "content_scripts": [{

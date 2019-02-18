@@ -1,11 +1,54 @@
-// This file is identical for Chrome and Firefox, except for the following line
-// and the end of this file
-window.localStoragePromise.then(function() {
-    // When an extension is enabled from about:addons in Firefox,
-    // the options page is initialized before the background page.
-    return chrome.extension.getBackgroundPage().localStoragePromise;
-}).then(function() {
-var bg = chrome.extension.getBackgroundPage();
+/* globals chrome */
+var optionsPort;
+
+function initOptionsPort(onReady, retryAttempt) {
+    optionsPort = null;
+    if (retryAttempt) {
+        console.warn('Retry after disconnect from background, attempt ' + retryAttempt);
+    }
+    var port = chrome.runtime.connect({name: 'options-to-bg'});
+    port.onDisconnect.addListener(function() {
+        optionsPort = null;
+        setTimeout(initOptionsPort, 50, onReady, retryAttempt + 1);
+    });
+    port.onMessage.addListener(function(msg) {
+        switch (msg.type) {
+        case 'ready':
+            optionsPort = port;
+            retryAttempt = 0;
+
+            _initDefaultLinkExample(msg.defaultLinkExample);
+
+            socketEventListener(msg.socketStatus == 1 ? 'open' : 'close');
+            _uidChange(msg.uid);
+            _linkChange(msg.link);
+            _unreadChange(msg.unreadCount);
+            _tokenChange(msg.token);
+            validateUIDInput();
+            uidToName(msg.uid);
+            onReady();
+            break;
+        case 'emit:socket':
+            socketEventListener(msg.data);
+            break;
+        case 'emit:change:uid':
+            _uidChange(msg.data);
+            break;
+        case 'emit:change:link':
+            _linkChange(msg.data);
+            break;
+        case 'emit:change:unread':
+            _unreadChange(msg.data);
+            break;
+        case 'emit:change:token':
+            _tokenChange(msg.data);
+            break;
+        case 'emit:found:account_id':
+            _foundAccountID(msg.data);
+            break;
+        }
+    });
+}
 
 var uid = document.getElementById('uid');
 var link = document.getElementById('link');
@@ -19,13 +62,15 @@ var socketStop = document.getElementById('socket-stop');
 var autostart = document.getElementById('autostart');
 var use_desktop_notifications = document.getElementById('use_desktop_notifications');
 
-uid.defaultValue = uid.value = bg.getUserID() || '';
-link.defaultValue = link.value = bg.getLink() || '';
-link.placeholder = bg.generateDefaultLink('<uid>');
-link.title += ' Defaults to ' + bg.generateDefaultLink('<uid>');
+function _initDefaultLinkExample(defaultLinkExample) {
+    if (link.placeholder) return; // Run once.
+    link.placeholder = defaultLinkExample;
+    link.title += ' Defaults to ' + defaultLinkExample;
+    document.getElementById('default-link').textContent = defaultLinkExample;
+}
 
 tokenButton.onclick = function() {
-    bg.StackExchangeInbox.auth.requestToken();
+    optionsPort.postMessage({type: 'requestToken'});
 };
 
 // When no preference is set, set autostart to true
@@ -47,8 +92,8 @@ function updateSaveButtonState() {
 updateSaveButtonState();
 // Save uid and link settings
 var saveFields = save.onclick = function() {
-    bg.setUserID(uid.value);
-    bg.setLink(link.value);
+    optionsPort.postMessage({type: 'setUserID', data: uid.value});
+    optionsPort.postMessage({type: 'setLink', data: link.value});
     uid.classList.remove('changed');
     link.classList.remove('changed');
     updateSaveButtonState();
@@ -100,7 +145,6 @@ var validateUIDInput = uid.oninput = function() {
     }
     updateSaveButtonState();
 };
-validateUIDInput();
 // Given a UID, a name is fetched using the Stack Exchange API
 function uidToName(val) {
     val = +val;
@@ -194,20 +238,25 @@ function siteuidToName(result, /*number*/ uid_value) {
 
 // Start/stop socket feature
 socketStart.onclick = function() {
-    bg.startSocket();
+    optionsPort.postMessage({type: 'startSocket'});
 };
 socketStop.onclick = function() {
-    bg.stopSocket(true);
+    optionsPort.postMessage({type: 'stopSocket'});
 };
+
+var __uid = '';
+var __socketStatus = 0;
 
 // Event emitter event listeners
 function _uidChange(value) {
+    __uid = value;
     uid.defaultValue = uid.value = value;
+    // TODO: unreachable code in if.
     if (value != uid.value) {
         uidToName(value);
     }
     // If socket has been started, then disable button
-    socketStart.disabled = bg.getSocketStatus() == 1;
+    socketStart.disabled = __socketStatus == 1;
 }
 function _linkChange(value) {
     link.defaultValue = link.value = value;
@@ -216,7 +265,6 @@ function _unreadChange(unreadCount) {
     unreadCount = unreadCount ? '(' + unreadCount + ')' : '';
     document.getElementById('unread-count').textContent = unreadCount;
 }
-_unreadChange(bg.getUnreadCount());
 function _tokenChange(token) {
     if (token) {
         tokenButton.value = 'Token accepted';
@@ -226,7 +274,6 @@ function _tokenChange(token) {
         tokenButton.disabled = false;
     }
 }
-_tokenChange(bg.StackExchangeInbox.auth.getToken());
 
 function _foundAccountID(account_id) {
     // Happens after successful authentication
@@ -242,31 +289,13 @@ function socketEventListener(status) {
     } else if (status == 'close') {
         statusSpan.textContent = 'stopped';
         // Only show if uid is defined
-        socketStart.disabled = !bg.getUserID();
+        socketStart.disabled = !__uid;
         socketStop.disabled = true;
     }
 }
-// Handle current status
-socketEventListener(bg.getSocketStatus() == 1 ? 'open' : 'close');
 
-// Bind events
-bg.eventEmitter.on('socket', socketEventListener);
-bg.eventEmitter.on('change:uid', _uidChange);
-bg.eventEmitter.on('change:link', _linkChange);
-bg.eventEmitter.on('change:unread', _unreadChange);
-bg.StackExchangeInbox.on('change:token', _tokenChange);
-bg.StackExchangeInbox.on('found:account_id', _foundAccountID);
-addEventListener('unload', function() {
-    bg.eventEmitter.off('socket', socketEventListener);
-    bg.eventEmitter.off('change:uid', _uidChange);
-    bg.eventEmitter.off('change:link', _linkChange);
-    bg.eventEmitter.off('change:unread', _unreadChange);
-    bg.StackExchangeInbox.off('change:token', _tokenChange);
-    bg.StackExchangeInbox.off('found:account_id', _foundAccountID);
-});
-
-// Extremely low priority, so put it here:
-// (this inserts the name corresponding to the user id after the #uid field))
-uidToName(bg.getUserID());
-
+window.optionsInitPromise = window.localStoragePromise.then(function() {
+    return new Promise(function(resolve) {
+        initOptionsPort(resolve, 0);
+    });
 });

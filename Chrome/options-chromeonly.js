@@ -1,16 +1,9 @@
-window.localStoragePromise.then(function() {
-    // When an extension is enabled from about:addons in Firefox,
-    // the options page is initialized before the background page.
-    return chrome.extension.getBackgroundPage().localStoragePromise;
-}).then(function() {
+window.optionsInitPromise.then(function() { // in options.js
 
-var bg = chrome.extension.getBackgroundPage();
 var incognito = document.getElementById('incognito');
 var autostart = document.getElementById('autostart');
 var run_in_bg = document.getElementById('run_in_bg');
 var persist_notification = document.getElementById('persist_notification');
-
-document.getElementById('default-link').textContent = bg.generateDefaultLink('<uid>');
 
 // Open tabs in incognito window? 
 incognito.checked = !!localStorage.getItem('incognito');
