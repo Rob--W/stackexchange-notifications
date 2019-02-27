@@ -2,7 +2,7 @@
     "name": "Desktop Notifications for Stack Exchange",
     "description": "Real-time desktop notifications for the Stack Exchange.",
     "homepage_url": "https://stackapps.com/q/3780/9699",
-    "version": "2.1",
+    "version": "2.2",
     "manifest_version": 2,
     "background": {
         "scripts": [
@@ -36,7 +36,7 @@
         "128": "icon.png"
     },
     "permissions": [
-        "https://api.stackexchange.com/2.1/inbox*",
+        "https://api.stackexchange.com/*",
         "notifications",
         "storage",
         "tabs"
